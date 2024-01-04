@@ -16,12 +16,14 @@
 // #include "flang/Parser/unparse.h"
 // #include "flang/Semantics/expression.h"
 
+using namespace Fortran::parser;
+
 namespace Fortran {
 
 namespace format {
 
-int format(llvm::StringRef path, parser::Options parserOpts,
-    const FormatOptions &formatOpts) {
+int format(
+    llvm::StringRef path, Options parserOpts, const FormatOptions &formatOpts) {
   if (formatOpts.sourceFormat == SourceFormat::Auto) {
     auto dot{path.rfind(".")};
     if (dot != std::string::npos) {
@@ -30,9 +32,9 @@ int format(llvm::StringRef path, parser::Options parserOpts,
     }
   }
 
-  parser::AllSources allSources;
-  parser::AllCookedSources allCookedSources{allSources};
-  parser::Parsing parsing{allCookedSources};
+  AllSources allSources;
+  AllCookedSources allCookedSources{allSources};
+  Parsing parsing{allCookedSources};
 
   parsing.Prescan(path.str(), parserOpts);
   if (!parsing.messages().empty() && parsing.messages().AnyFatalError()) {
@@ -49,6 +51,15 @@ int format(llvm::StringRef path, parser::Options parserOpts,
       !parsing.parseTree()) {
     return EXIT_FAILURE;
   }
+
+  Program &program{*parsing.parseTree()};
+  for (const ProgramUnit &unit : program.v) {
+    if (auto *main = std::get_if<common::Indirection<MainProgram>>(&unit.u))
+      llvm::errs() << "this: " << FindSourceLocation(main->value()) << "\n";
+  }
+  // Unparse(llvm::outs(), parseTree, formatOpts.encoding, true /*capitalize*/,
+  //     parserOpts.features.IsEnabled(
+  //         Fortran::common::LanguageFeature::BackslashEscapes));
 
   return EXIT_SUCCESS;
 }

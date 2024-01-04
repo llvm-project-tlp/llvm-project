@@ -130,8 +130,8 @@ static const CommandLineOptions parseCommandLineOptions(
   cl::opt<bool, true> freeForm("ffree-form", cl::location(clOpts.freeForm),
       cl::init(false), cl::desc("Process source files in free form"));
 
-  cl::opt<bool, true> version("version", cl::location(clOpts.version),
-      cl::init(false), cl::desc("Print the tool version"));
+  // cl::opt<bool, true> version("version", cl::location(clOpts.version),
+  //     cl::init(false), cl::desc("Print the tool version"));
 
   cl::list<std::string, std::list<std::string>> files(cl::Positional,
       cl::ZeroOrMore, cl::location(clOpts.files), cl::desc("<file>"));
