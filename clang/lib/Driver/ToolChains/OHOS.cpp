@@ -313,6 +313,11 @@ std::string OHOS::getDynamicLinker(const ArgList &Args) const {
   const llvm::Triple::ArchType Arch = getArch();
 
   assert(Triple.isMusl());
+
+  std::string DefaultDynamicLinker = CLANG_DEFAULT_DYNAMIC_LINKER;
+  if (not DefaultDynamicLinker.empty())
+    return DefaultDynamicLinker;
+
   std::string ArchName;
   bool IsArm = false;
 

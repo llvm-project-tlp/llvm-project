@@ -438,6 +438,10 @@ std::string Linux::getDynamicLinker(const ArgList &Args) const {
 
   const Distro Distro(getDriver().getVFS(), Triple);
 
+  std::string DefaultDynamicLinker = CLANG_DEFAULT_DYNAMIC_LINKER;
+  if (not DefaultDynamicLinker.empty())
+    return DefaultDynamicLinker;
+
   if (Triple.isAndroid()) {
     if (getSanitizerArgs(Args).needsHwasanRt() &&
         !Triple.isAndroidVersionLT(34) && Triple.isArch64Bit()) {

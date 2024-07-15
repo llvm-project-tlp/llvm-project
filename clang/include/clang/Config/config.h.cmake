@@ -14,6 +14,9 @@
 /* Default linker to use. */
 #define CLANG_DEFAULT_LINKER "${CLANG_DEFAULT_LINKER}"
 
+/* Default dynamic linker to use. */
+#define CLANG_DEFAULT_DYNAMIC_LINKER "${CLANG_DEFAULT_DYNAMIC_LINKER}"
+
 /* Default C++ stdlib to use. */
 #define CLANG_DEFAULT_CXX_STDLIB "${CLANG_DEFAULT_CXX_STDLIB}"
 

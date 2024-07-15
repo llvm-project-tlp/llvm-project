@@ -134,6 +134,10 @@ Tool *Hurd::buildAssembler() const {
 }
 
 std::string Hurd::getDynamicLinker(const ArgList &Args) const {
+  std::string DefaultDynamicLinker = CLANG_DEFAULT_DYNAMIC_LINKER;
+  if (not DefaultDynamicLinker.empty())
+    return DefaultDynamicLinker;
+
   switch (getArch()) {
   case llvm::Triple::x86:
     return "/lib/ld.so";

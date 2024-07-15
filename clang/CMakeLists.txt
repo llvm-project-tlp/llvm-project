@@ -230,6 +230,9 @@ option(CLANG_DEFAULT_PIE_ON_LINUX "Default to -fPIE and -pie on linux-gnu" ON)
 set(CLANG_DEFAULT_LINKER "" CACHE STRING
   "Default linker to use (linker name or absolute path, empty for platform default)")
 
+set(CLANG_DEFAULT_DYNAMIC_LINKER "" CACHE STRING
+  "Default dynamic linker to use (absolute path , empty for platform default)")
+
 set(CLANG_DEFAULT_CXX_STDLIB "" CACHE STRING
   "Default C++ stdlib to use (\"libstdc++\" or \"libc++\", empty for platform default")
 if (NOT(CLANG_DEFAULT_CXX_STDLIB STREQUAL "" OR
