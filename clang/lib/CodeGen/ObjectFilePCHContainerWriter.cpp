@@ -46,6 +46,7 @@ class PCHContainerGenerator : public ASTConsumer {
   ASTContext *Ctx;
   ModuleMap &MMap;
   IntrusiveRefCntPtr<llvm::vfs::FileSystem> FS;
+  const FrontendOptions &FEOpts;
   const HeaderSearchOptions &HeaderSearchOpts;
   const PreprocessorOptions &PreprocessorOpts;
   CodeGenOptions CodeGenOpts;
@@ -145,7 +146,7 @@ public:
       : Diags(CI.getDiagnostics()), MainFileName(MainFileName),
         OutputFileName(OutputFileName), Ctx(nullptr),
         MMap(CI.getPreprocessor().getHeaderSearchInfo().getModuleMap()),
-        FS(&CI.getVirtualFileSystem()),
+        FS(&CI.getVirtualFileSystem()), FEOpts(CI.getFrontendOpts()),
         HeaderSearchOpts(CI.getHeaderSearchOpts()),
         PreprocessorOpts(CI.getPreprocessorOpts()),
         TargetOpts(CI.getTargetOpts()), LangOpts(CI.getLangOpts()),
@@ -321,7 +322,7 @@ public:
       // Print the IR for the PCH container to the debug output.
       llvm::SmallString<0> Buffer;
       clang::EmitBackendOutput(
-          Diags, HeaderSearchOpts, CodeGenOpts, TargetOpts, LangOpts,
+          Diags, FEOpts, HeaderSearchOpts, CodeGenOpts, TargetOpts, LangOpts,
           Ctx.getTargetInfo().getDataLayoutString(), M.get(),
           BackendAction::Backend_EmitLL, FS,
           std::make_unique<llvm::raw_svector_ostream>(Buffer));
@@ -329,8 +330,8 @@ public:
     });
 
     // Use the LLVM backend to emit the pch container.
-    clang::EmitBackendOutput(Diags, HeaderSearchOpts, CodeGenOpts, TargetOpts,
-                             LangOpts,
+    clang::EmitBackendOutput(Diags, FEOpts, HeaderSearchOpts, CodeGenOpts,
+                             TargetOpts, LangOpts,
                              Ctx.getTargetInfo().getDataLayoutString(), M.get(),
                              BackendAction::Backend_EmitObj, FS, std::move(OS));
 

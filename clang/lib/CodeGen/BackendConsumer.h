@@ -30,6 +30,7 @@ class BackendConsumer : public ASTConsumer {
   virtual void anchor();
   DiagnosticsEngine &Diags;
   BackendAction Action;
+  const FrontendOptions& FEOpts;
   const HeaderSearchOptions &HeaderSearchOpts;
   const CodeGenOptions &CodeGenOpts;
   const TargetOptions &TargetOpts;
@@ -71,6 +72,7 @@ class BackendConsumer : public ASTConsumer {
 public:
   BackendConsumer(BackendAction Action, DiagnosticsEngine &Diags,
                   IntrusiveRefCntPtr<llvm::vfs::FileSystem> VFS,
+                  const FrontendOptions& FEOpts,
                   const HeaderSearchOptions &HeaderSearchOpts,
                   const PreprocessorOptions &PPOpts,
                   const CodeGenOptions &CodeGenOpts,
@@ -85,6 +87,7 @@ public:
   // initializing the OS field.
   BackendConsumer(BackendAction Action, DiagnosticsEngine &Diags,
                   IntrusiveRefCntPtr<llvm::vfs::FileSystem> VFS,
+                  const FrontendOptions& FEOpts,
                   const HeaderSearchOptions &HeaderSearchOpts,
                   const PreprocessorOptions &PPOpts,
                   const CodeGenOptions &CodeGenOpts,

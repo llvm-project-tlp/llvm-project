@@ -5695,6 +5695,11 @@ def print_runtime_dir : Flag<["-", "--"], "print-runtime-dir">,
 def print_diagnostic_options : Flag<["-", "--"], "print-diagnostic-options">,
   HelpText<"Print all of Clang's warning options">,
   Visibility<[ClangOption, CLOption]>;
+def print_pipeline_passes: Flag<["-", "--"], "print-pipeline-passes">,
+  HelpText<"Print a 'opt -passes' compatible string describing the pass "
+           "pipeline (best-effort only).">,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption, CC1Option, FC1Option]>,
+  MarshallingInfoFlag<FrontendOpts<"PrintPipelinePasses">>;
 def private__bundle : Flag<["-"], "private_bundle">;
 def pthreads : Flag<["-"], "pthreads">;
 defm pthread : BoolOption<"", "pthread",

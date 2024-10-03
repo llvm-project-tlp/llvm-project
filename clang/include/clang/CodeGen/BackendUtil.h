@@ -26,6 +26,7 @@ namespace llvm {
 
 namespace clang {
   class DiagnosticsEngine;
+  class FrontendOptions;
   class HeaderSearchOptions;
   class CodeGenOptions;
   class TargetOptions;
@@ -41,7 +42,8 @@ namespace clang {
     Backend_EmitObj        ///< Emit native object files
   };
 
-  void EmitBackendOutput(DiagnosticsEngine &Diags, const HeaderSearchOptions &,
+  void EmitBackendOutput(DiagnosticsEngine &Diags, const FrontendOptions &,
+                         const HeaderSearchOptions &,
                          const CodeGenOptions &CGOpts,
                          const TargetOptions &TOpts, const LangOptions &LOpts,
                          StringRef TDesc, llvm::Module *M, BackendAction Action,

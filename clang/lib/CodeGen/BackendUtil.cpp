@@ -98,7 +98,6 @@ using namespace llvm;
 #include "llvm/Support/Extension.def"
 
 namespace llvm {
-extern cl::opt<bool> PrintPipelinePasses;
 
 // Experiment to move sanitizers earlier.
 static cl::opt<bool> ClSanitizeOnOptimizerEarlyEP(
@@ -134,6 +133,7 @@ std::string getDefaultProfileGenName() {
 
 class EmitAssemblyHelper {
   DiagnosticsEngine &Diags;
+  const FrontendOptions& FEOpts;
   const HeaderSearchOptions &HSOpts;
   const CodeGenOptions &CodeGenOpts;
   const clang::TargetOptions &TargetOpts;
@@ -207,14 +207,15 @@ class EmitAssemblyHelper {
   }
 
 public:
-  EmitAssemblyHelper(DiagnosticsEngine &_Diags,
+  EmitAssemblyHelper(DiagnosticsEngine &_Diags, const FrontendOptions &FEOpts,
                      const HeaderSearchOptions &HeaderSearchOpts,
                      const CodeGenOptions &CGOpts,
                      const clang::TargetOptions &TOpts,
                      const LangOptions &LOpts, llvm::Module *M,
                      IntrusiveRefCntPtr<llvm::vfs::FileSystem> VFS)
-      : Diags(_Diags), HSOpts(HeaderSearchOpts), CodeGenOpts(CGOpts),
-        TargetOpts(TOpts), LangOpts(LOpts), TheModule(M), VFS(std::move(VFS)),
+      : Diags(_Diags), FEOpts(FEOpts), HSOpts(HeaderSearchOpts),
+        CodeGenOpts(CGOpts), TargetOpts(TOpts), LangOpts(LOpts), TheModule(M),
+        VFS(std::move(VFS)),
         CodeGenerationTime("codegen", "Code Generation Time"),
         TargetTriple(TheModule->getTargetTriple()) {}
 
@@ -1134,7 +1135,7 @@ void EmitAssemblyHelper::RunOptimizationPipeline(
   // This should be done for both clang and flang simultaneously.
   // Print a textual, '-passes=' compatible, representation of pipeline if
   // requested.
-  if (PrintPipelinePasses) {
+  if (FEOpts.PrintPipelinePasses) {
     MPM.printPipeline(outs(), [&PIC](StringRef ClassName) {
       auto PassName = PIC.getPassNameForClassName(ClassName);
       return PassName.empty() ? ClassName : PassName;
@@ -1332,10 +1333,11 @@ static void runThinLTOBackend(
 }
 
 void clang::EmitBackendOutput(
-    DiagnosticsEngine &Diags, const HeaderSearchOptions &HeaderOpts,
-    const CodeGenOptions &CGOpts, const clang::TargetOptions &TOpts,
-    const LangOptions &LOpts, StringRef TDesc, llvm::Module *M,
-    BackendAction Action, IntrusiveRefCntPtr<llvm::vfs::FileSystem> VFS,
+    DiagnosticsEngine &Diags, const FrontendOptions &FEOpts,
+    const HeaderSearchOptions &HeaderOpts, const CodeGenOptions &CGOpts,
+    const clang::TargetOptions &TOpts, const LangOptions &LOpts,
+    StringRef TDesc, llvm::Module *M, BackendAction Action,
+    IntrusiveRefCntPtr<llvm::vfs::FileSystem> VFS,
     std::unique_ptr<raw_pwrite_stream> OS, BackendConsumer *BC) {
 
   llvm::TimeTraceScope TimeScope("Backend");
@@ -1378,7 +1380,8 @@ void clang::EmitBackendOutput(
     }
   }
 
-  EmitAssemblyHelper AsmHelper(Diags, HeaderOpts, CGOpts, TOpts, LOpts, M, VFS);
+  EmitAssemblyHelper AsmHelper(Diags, FEOpts, HeaderOpts, CGOpts, TOpts, LOpts,
+                               M, VFS);
   AsmHelper.EmitAssembly(Action, std::move(OS), BC);
 
   // Verify clang's TargetInfo DataLayout against the LLVM TargetMachine's

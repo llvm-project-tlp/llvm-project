@@ -314,6 +314,10 @@ public:
   LLVM_PREFERRED_TYPE(bool)
   unsigned ShowVersion : 1;
 
+  /// Print an "opt -passes" compatible string describing the pass pipeline.
+  LLVM_PREFERRED_TYPE(bool)
+  unsigned PrintPipelinePasses: 1;
+
   /// Apply fixes even if there are unfixable errors.
   LLVM_PREFERRED_TYPE(bool)
   unsigned FixWhatYouCan : 1;
@@ -595,15 +599,16 @@ public:
   FrontendOptions()
       : DisableFree(false), RelocatablePCH(false), ShowHelp(false),
         ShowStats(false), AppendStats(false), ShowVersion(false),
-        FixWhatYouCan(false), FixOnlyWarnings(false), FixAndRecompile(false),
-        FixToTemporaries(false), ARCMTMigrateEmitARCErrors(false),
-        SkipFunctionBodies(false), UseGlobalModuleIndex(true),
-        GenerateGlobalModuleIndex(true), ASTDumpDecls(false),
-        ASTDumpLookups(false), BuildingImplicitModule(false),
-        BuildingImplicitModuleUsesLock(true), ModulesEmbedAllFiles(false),
-        IncludeTimestamps(true), UseTemporary(true),
-        AllowPCMWithCompilerErrors(false), ModulesShareFileManager(true),
-        EmitSymbolGraph(false), EmitExtensionSymbolGraphs(false),
+        PrintPipelinePasses(false), FixWhatYouCan(false),
+        FixOnlyWarnings(false), FixAndRecompile(false), FixToTemporaries(false),
+        ARCMTMigrateEmitARCErrors(false), SkipFunctionBodies(false),
+        UseGlobalModuleIndex(true), GenerateGlobalModuleIndex(true),
+        ASTDumpDecls(false), ASTDumpLookups(false),
+        BuildingImplicitModule(false), BuildingImplicitModuleUsesLock(true),
+        ModulesEmbedAllFiles(false), IncludeTimestamps(true),
+        UseTemporary(true), AllowPCMWithCompilerErrors(false),
+        ModulesShareFileManager(true), EmitSymbolGraph(false),
+        EmitExtensionSymbolGraphs(false),
         EmitSymbolGraphSymbolLabelsForTesting(false),
         EmitPrettySymbolGraphs(false), GenReducedBMI(false),
         UseClangIRPipeline(false), TimeTraceGranularity(500),

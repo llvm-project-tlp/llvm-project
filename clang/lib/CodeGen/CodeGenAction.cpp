@@ -111,15 +111,16 @@ static void reportOptRecordError(Error E, DiagnosticsEngine &Diags,
 BackendConsumer::BackendConsumer(
     BackendAction Action, DiagnosticsEngine &Diags,
     IntrusiveRefCntPtr<llvm::vfs::FileSystem> VFS,
-    const HeaderSearchOptions &HeaderSearchOpts,
+    const FrontendOptions &FEOpts, const HeaderSearchOptions &HeaderSearchOpts,
     const PreprocessorOptions &PPOpts, const CodeGenOptions &CodeGenOpts,
     const TargetOptions &TargetOpts, const LangOptions &LangOpts,
     const std::string &InFile, SmallVector<LinkModule, 4> LinkModules,
     std::unique_ptr<raw_pwrite_stream> OS, LLVMContext &C,
     CoverageSourceInfo *CoverageInfo)
-    : Diags(Diags), Action(Action), HeaderSearchOpts(HeaderSearchOpts),
-      CodeGenOpts(CodeGenOpts), TargetOpts(TargetOpts), LangOpts(LangOpts),
-      AsmOutStream(std::move(OS)), Context(nullptr), FS(VFS),
+    : Diags(Diags), Action(Action), FEOpts(FEOpts),
+      HeaderSearchOpts(HeaderSearchOpts), CodeGenOpts(CodeGenOpts),
+      TargetOpts(TargetOpts), LangOpts(LangOpts), AsmOutStream(std::move(OS)),
+      Context(nullptr), FS(VFS),
       LLVMIRGeneration("irgen", "LLVM IR Generation Time"),
       LLVMIRGenerationRefCount(0),
       Gen(CreateLLVMCodeGen(Diags, InFile, std::move(VFS), HeaderSearchOpts,
@@ -136,14 +137,14 @@ BackendConsumer::BackendConsumer(
 BackendConsumer::BackendConsumer(
     BackendAction Action, DiagnosticsEngine &Diags,
     IntrusiveRefCntPtr<llvm::vfs::FileSystem> VFS,
-    const HeaderSearchOptions &HeaderSearchOpts,
+    const FrontendOptions &FEOpts, const HeaderSearchOptions &HeaderSearchOpts,
     const PreprocessorOptions &PPOpts, const CodeGenOptions &CodeGenOpts,
     const TargetOptions &TargetOpts, const LangOptions &LangOpts,
     llvm::Module *Module, SmallVector<LinkModule, 4> LinkModules,
     LLVMContext &C, CoverageSourceInfo *CoverageInfo)
-    : Diags(Diags), Action(Action), HeaderSearchOpts(HeaderSearchOpts),
-      CodeGenOpts(CodeGenOpts), TargetOpts(TargetOpts), LangOpts(LangOpts),
-      Context(nullptr), FS(VFS),
+    : Diags(Diags), Action(Action), FEOpts(FEOpts),
+      HeaderSearchOpts(HeaderSearchOpts), CodeGenOpts(CodeGenOpts),
+      TargetOpts(TargetOpts), LangOpts(LangOpts), Context(nullptr), FS(VFS),
       LLVMIRGeneration("irgen", "LLVM IR Generation Time"),
       LLVMIRGenerationRefCount(0),
       Gen(CreateLLVMCodeGen(Diags, "", std::move(VFS), HeaderSearchOpts, PPOpts,
@@ -351,9 +352,9 @@ void BackendConsumer::HandleTranslationUnit(ASTContext &C) {
 
   EmbedBitcode(getModule(), CodeGenOpts, llvm::MemoryBufferRef());
 
-  EmitBackendOutput(Diags, HeaderSearchOpts, CodeGenOpts, TargetOpts, LangOpts,
-                    C.getTargetInfo().getDataLayoutString(), getModule(),
-                    Action, FS, std::move(AsmOutStream), this);
+  EmitBackendOutput(Diags, FEOpts, HeaderSearchOpts, CodeGenOpts, TargetOpts,
+                    LangOpts, C.getTargetInfo().getDataLayoutString(),
+                    getModule(), Action, FS, std::move(AsmOutStream), this);
 
   Ctx.setDiagnosticHandler(std::move(OldDiagnosticHandler));
 
@@ -1014,7 +1015,7 @@ CodeGenAction::CreateASTConsumer(CompilerInstance &CI, StringRef InFile) {
         CI.getPreprocessor());
 
   std::unique_ptr<BackendConsumer> Result(new BackendConsumer(
-      BA, CI.getDiagnostics(), &CI.getVirtualFileSystem(),
+      BA, CI.getDiagnostics(), &CI.getVirtualFileSystem(), CI.getFrontendOpts(),
       CI.getHeaderSearchOpts(), CI.getPreprocessorOpts(), CI.getCodeGenOpts(),
       CI.getTargetOpts(), CI.getLangOpts(), std::string(InFile),
       std::move(LinkModules), std::move(OS), *VMContext, CoverageInfo));
@@ -1186,9 +1187,9 @@ void CodeGenAction::ExecuteAction() {
   // Set clang diagnostic handler. To do this we need to create a fake
   // BackendConsumer.
   BackendConsumer Result(BA, CI.getDiagnostics(), &CI.getVirtualFileSystem(),
-                         CI.getHeaderSearchOpts(), CI.getPreprocessorOpts(),
-                         CI.getCodeGenOpts(), CI.getTargetOpts(),
-                         CI.getLangOpts(), TheModule.get(),
+                         CI.getFrontendOpts(), CI.getHeaderSearchOpts(),
+                         CI.getPreprocessorOpts(), CI.getCodeGenOpts(),
+                         CI.getTargetOpts(), CI.getLangOpts(), TheModule.get(),
                          std::move(LinkModules), *VMContext, nullptr);
 
   // Link in each pending link module.
@@ -1217,10 +1218,11 @@ void CodeGenAction::ExecuteAction() {
   std::unique_ptr<llvm::ToolOutputFile> OptRecordFile =
       std::move(*OptRecordFileOrErr);
 
-  EmitBackendOutput(
-      Diagnostics, CI.getHeaderSearchOpts(), CodeGenOpts, TargetOpts,
-      CI.getLangOpts(), CI.getTarget().getDataLayoutString(), TheModule.get(),
-      BA, CI.getFileManager().getVirtualFileSystemPtr(), std::move(OS));
+  EmitBackendOutput(Diagnostics, CI.getFrontendOpts(), CI.getHeaderSearchOpts(),
+                    CodeGenOpts, TargetOpts, CI.getLangOpts(),
+                    CI.getTarget().getDataLayoutString(), TheModule.get(), BA,
+                    CI.getFileManager().getVirtualFileSystemPtr(),
+                    std::move(OS));
   if (OptRecordFile)
     OptRecordFile->keep();
 }
