@@ -122,16 +122,16 @@ void Flang::addOtherOptions(const ArgList &Args, ArgStringList &CmdArgs) const {
                    options::OPT_fconvert_EQ, options::OPT_fpass_plugin_EQ,
                    options::OPT_funderscoring, options::OPT_fno_underscoring});
 
-  llvm::codegenoptions::DebugInfoKind DebugInfoKind;
-  if (Args.hasArg(options::OPT_gN_Group)) {
-    Arg *gNArg = Args.getLastArg(options::OPT_gN_Group);
-    DebugInfoKind = debugLevelToInfoKind(*gNArg);
-  } else if (Args.hasArg(options::OPT_g_Flag)) {
-    DebugInfoKind = llvm::codegenoptions::FullDebugInfo;
-  } else {
-    DebugInfoKind = llvm::codegenoptions::NoDebugInfo;
-  }
-  addDebugInfoKind(CmdArgs, DebugInfoKind);
+  // llvm::codegenoptions::DebugInfoKind DebugInfoKind;
+  // if (Args.hasArg(options::OPT_gN_Group)) {
+  //   Arg *gNArg = Args.getLastArg(options::OPT_gN_Group);
+  //   DebugInfoKind = debugLevelToInfoKind(*gNArg);
+  // } else if (Args.hasArg(options::OPT_g_Flag)) {
+  //   DebugInfoKind = llvm::codegenoptions::FullDebugInfo;
+  // } else {
+  //   DebugInfoKind = llvm::codegenoptions::NoDebugInfo;
+  // }
+  // addDebugInfoKind(CmdArgs, DebugInfoKind);
 }
 
 void Flang::addCodegenOptions(const ArgList &Args,
@@ -675,7 +675,8 @@ static void renderRemarksOptions(const ArgList &Args, ArgStringList &CmdArgs,
 void Flang::ConstructJob(Compilation &C, const JobAction &JA,
                          const InputInfo &Output, const InputInfoList &Inputs,
                          const ArgList &Args, const char *LinkingOutput) const {
-  const auto &TC = getToolChain();
+  const ToolChain &TC = getToolChain();
+  const llvm::Triple &RawTriple = TC.getTriple();
   const llvm::Triple &Triple = TC.getEffectiveTriple();
   const std::string &TripleStr = Triple.getTriple();
 
@@ -764,6 +765,13 @@ void Flang::ConstructJob(Compilation &C, const JobAction &JA,
   // Remarks can be enabled with any of the `-f.*optimization-record.*` flags.
   if (willEmitRemarks(Args))
     renderRemarksOptions(Args, CmdArgs, Input);
+
+  // Add debug options
+  llvm::codegenoptions::DebugInfoKind DebugInfoKind =
+      llvm::codegenoptions::NoDebugInfo;
+  DwarfFissionKind DwarfFission = DwarfFissionKind::None;
+  renderDebugOptions(TC, D, RawTriple, Args, types::isLLVMIR(InputType),
+                     CmdArgs, Output, DebugInfoKind, DwarfFission);
 
   // Add other compile options
   addOtherOptions(Args, CmdArgs);

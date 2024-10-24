@@ -7,7 +7,6 @@
 //===----------------------------------------------------------------------===//
 
 #include "RISCV.h"
-#include "../Clang.h"
 #include "ToolChains/CommonArgs.h"
 #include "clang/Basic/CharInfo.h"
 #include "clang/Driver/Driver.h"

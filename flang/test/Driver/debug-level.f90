@@ -4,4 +4,3 @@
 
 ! LINE: -debug-info-kind=line-tables-only
 ! FULL: -debug-info-kind=standalone
-

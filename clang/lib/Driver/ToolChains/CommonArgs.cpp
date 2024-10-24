@@ -931,7 +931,7 @@ void tools::addLTOOptions(const ToolChain &ToolChain, const ArgList &Args,
   // LowerMatrixIntrinsicsPass, which is transitively called by
   // buildThinLTODefaultPipeline under EnableMatrix.
   if ((IsThinLTO || IsFatLTO || IsUnifiedLTO) &&
-        Args.hasArg(options::OPT_fenable_matrix))
+      Args.hasArg(options::OPT_fenable_matrix))
     CmdArgs.push_back(
         Args.MakeArgString(Twine(PluginOptPrefix) + "-enable-matrix"));
 
@@ -1238,7 +1238,7 @@ bool tools::addOpenMPRuntime(const Compilation &C, ArgStringList &CmdArgs,
     CmdArgs.push_back("-Bdynamic");
 
   if (RTKind == Driver::OMPRT_GOMP && GompNeedsRT)
-      CmdArgs.push_back("-lrt");
+    CmdArgs.push_back("-lrt");
 
   if (IsOffloadingHost)
     CmdArgs.push_back("-lomptarget");
@@ -1327,10 +1327,12 @@ static void addSanitizerRuntime(const ToolChain &TC, const ArgList &Args,
                                 bool IsShared, bool IsWhole) {
   // Wrap any static runtimes that must be forced into executable in
   // whole-archive.
-  if (IsWhole) CmdArgs.push_back("--whole-archive");
+  if (IsWhole)
+    CmdArgs.push_back("--whole-archive");
   CmdArgs.push_back(TC.getCompilerRTArgString(
       Args, Sanitizer, IsShared ? ToolChain::FT_Shared : ToolChain::FT_Static));
-  if (IsWhole) CmdArgs.push_back("--no-whole-archive");
+  if (IsWhole)
+    CmdArgs.push_back("--no-whole-archive");
 
   if (IsShared) {
     addArchSpecificRPath(TC, Args, CmdArgs);
@@ -1397,8 +1399,7 @@ void tools::linkSanitizerRuntimeDeps(const ToolChain &TC,
       TC.getTriple().getOS() != llvm::Triple::RTEMS)
     CmdArgs.push_back("-ldl");
   // Required for backtrace on some OSes
-  if (TC.getTriple().isOSFreeBSD() ||
-      TC.getTriple().isOSNetBSD() ||
+  if (TC.getTriple().isOSFreeBSD() || TC.getTriple().isOSNetBSD() ||
       TC.getTriple().isOSOpenBSD())
     CmdArgs.push_back("-lexecinfo");
   // There is no libresolv on Android, FreeBSD, OpenBSD, etc. On musl
@@ -1622,7 +1623,8 @@ bool tools::addSanitizerRuntimes(const ToolChain &TC, const ArgList &Args,
   return !StaticRuntimes.empty() || !NonWholeStaticRuntimes.empty();
 }
 
-bool tools::addXRayRuntime(const ToolChain&TC, const ArgList &Args, ArgStringList &CmdArgs) {
+bool tools::addXRayRuntime(const ToolChain &TC, const ArgList &Args,
+                           ArgStringList &CmdArgs) {
   if (Args.hasArg(options::OPT_shared))
     return false;
 
@@ -1647,8 +1649,7 @@ void tools::linkXRayRuntimeDeps(const ToolChain &TC,
     CmdArgs.push_back("-lrt");
   CmdArgs.push_back("-lm");
 
-  if (!TC.getTriple().isOSFreeBSD() &&
-      !TC.getTriple().isOSNetBSD() &&
+  if (!TC.getTriple().isOSFreeBSD() && !TC.getTriple().isOSNetBSD() &&
       !TC.getTriple().isOSOpenBSD())
     CmdArgs.push_back("-ldl");
 }
@@ -1939,19 +1940,19 @@ tools::ParsePICArgs(const ToolChain &ToolChain, const ArgList &Args) {
 
   bool EmbeddedPISupported;
   switch (Triple.getArch()) {
-    case llvm::Triple::arm:
-    case llvm::Triple::armeb:
-    case llvm::Triple::thumb:
-    case llvm::Triple::thumbeb:
-      EmbeddedPISupported = true;
-      break;
-    default:
-      EmbeddedPISupported = false;
-      break;
+  case llvm::Triple::arm:
+  case llvm::Triple::armeb:
+  case llvm::Triple::thumb:
+  case llvm::Triple::thumbeb:
+    EmbeddedPISupported = true;
+    break;
+  default:
+    EmbeddedPISupported = false;
+    break;
   }
 
   bool ROPI = false, RWPI = false;
-  Arg* LastROPIArg = Args.getLastArg(options::OPT_fropi, options::OPT_fno_ropi);
+  Arg *LastROPIArg = Args.getLastArg(options::OPT_fropi, options::OPT_fno_ropi);
   if (LastROPIArg && LastROPIArg->getOption().matches(options::OPT_fropi)) {
     if (!EmbeddedPISupported)
       ToolChain.getDriver().Diag(diag::err_drv_unsupported_opt_for_target)
@@ -1980,7 +1981,7 @@ tools::ParsePICArgs(const ToolChain &ToolChain, const ArgList &Args) {
     if (ABIName == "n64")
       PIC = true;
     // When targettng MIPS with -mno-abicalls, it's always static.
-    if(Args.hasArg(options::OPT_mno_abicalls))
+    if (Args.hasArg(options::OPT_mno_abicalls))
       return std::make_tuple(llvm::Reloc::Static, 0U, false);
     // Unlike other architectures, MIPS, even with -fPIC/-mxgot/multigot,
     // does not use PIC level 2 for historical reasons.
@@ -2146,7 +2147,8 @@ enum class LibGccType { UnspecifiedLibGcc, StaticLibGcc, SharedLibGcc };
 static LibGccType getLibGccType(const ToolChain &TC, const Driver &D,
                                 const ArgList &Args) {
   if (Args.hasArg(options::OPT_static_libgcc) ||
-      Args.hasArg(options::OPT_static) || Args.hasArg(options::OPT_static_pie) ||
+      Args.hasArg(options::OPT_static) ||
+      Args.hasArg(options::OPT_static_pie) ||
       // The Android NDK only provides libunwind.a, not libunwind.so.
       TC.getTriple().isAndroid())
     return LibGccType::StaticLibGcc;
@@ -2514,11 +2516,10 @@ static void GetSDLFromOffloadArchive(
     return;
 
   StringRef Prefix = isBitCodeSDL ? "libbc-" : "lib";
-  std::string OutputLib =
-      D.GetTemporaryPath(Twine(Prefix + llvm::sys::path::filename(Lib) + "-" +
-                               Arch + "-" + Target)
-                             .str(),
-                         "a");
+  std::string OutputLib = D.GetTemporaryPath(
+      Twine(Prefix + llvm::sys::path::filename(Lib) + "-" + Arch + "-" + Target)
+          .str(),
+      "a");
 
   C.addTempFile(C.getArgs().MakeArgString(OutputLib));
 
@@ -2731,8 +2732,8 @@ void tools::addMachineOutlinerArgs(const Driver &D,
     }
   };
 
-  if (Arg *A = Args.getLastArg(options::OPT_moutline,
-                               options::OPT_mno_outline)) {
+  if (Arg *A =
+          Args.getLastArg(options::OPT_moutline, options::OPT_mno_outline)) {
     if (A->getOption().matches(options::OPT_moutline)) {
       // We only support -moutline in AArch64 and ARM targets right now. If
       // we're not compiling for these, emit a warning and ignore the flag.
@@ -3061,4 +3062,565 @@ void tools::renderCommonIntegerOverflowOptions(const ArgList &Args,
     if (A->getOption().matches(options::OPT_fno_strict_overflow))
       CmdArgs.push_back("-fwrapv");
   }
+}
+
+DwarfFissionKind tools::getDebugFissionKind(const Driver &D,
+                                            const ArgList &Args, Arg *&Arg) {
+  Arg = Args.getLastArg(options::OPT_gsplit_dwarf, options::OPT_gsplit_dwarf_EQ,
+                        options::OPT_gno_split_dwarf);
+  if (!Arg || Arg->getOption().matches(options::OPT_gno_split_dwarf))
+    return DwarfFissionKind::None;
+
+  if (Arg->getOption().matches(options::OPT_gsplit_dwarf))
+    return DwarfFissionKind::Split;
+
+  StringRef Value = Arg->getValue();
+  if (Value == "split")
+    return DwarfFissionKind::Split;
+  if (Value == "single")
+    return DwarfFissionKind::Single;
+
+  D.Diag(diag::err_drv_unsupported_option_argument)
+      << Arg->getSpelling() << Arg->getValue();
+  return DwarfFissionKind::None;
+}
+
+bool tools::checkDebugInfoOption(const Arg *A, const ArgList &Args,
+                                 const Driver &D, const ToolChain &TC) {
+  assert(A && "Expected non-nullptr argument.");
+  if (TC.supportsDebugInfoOption(A))
+    return true;
+  D.Diag(diag::warn_drv_unsupported_debug_info_opt_for_target)
+      << A->getAsString(Args) << TC.getTripleString();
+  return false;
+}
+
+void tools::renderDebugEnablingArgs(
+    const ArgList &Args, ArgStringList &CmdArgs,
+    llvm::codegenoptions::DebugInfoKind DebugInfoKind, unsigned DwarfVersion,
+    llvm::DebuggerKind DebuggerTuning) {
+  addDebugInfoKind(CmdArgs, DebugInfoKind);
+  if (DwarfVersion > 0)
+    CmdArgs.push_back(
+        Args.MakeArgString("-dwarf-version=" + Twine(DwarfVersion)));
+  switch (DebuggerTuning) {
+  case llvm::DebuggerKind::GDB:
+    CmdArgs.push_back("-debugger-tuning=gdb");
+    break;
+  case llvm::DebuggerKind::LLDB:
+    CmdArgs.push_back("-debugger-tuning=lldb");
+    break;
+  case llvm::DebuggerKind::SCE:
+    CmdArgs.push_back("-debugger-tuning=sce");
+    break;
+  case llvm::DebuggerKind::DBX:
+    CmdArgs.push_back("-debugger-tuning=dbx");
+    break;
+  default:
+    break;
+  }
+}
+
+const char *tools::addDebugCompDirArg(const ArgList &Args,
+                                      ArgStringList &CmdArgs,
+                                      const llvm::vfs::FileSystem &VFS) {
+  if (Arg *A = Args.getLastArg(options::OPT_ffile_compilation_dir_EQ,
+                               options::OPT_fdebug_compilation_dir_EQ)) {
+    if (A->getOption().matches(options::OPT_ffile_compilation_dir_EQ))
+      CmdArgs.push_back(Args.MakeArgString(Twine("-fdebug-compilation-dir=") +
+                                           A->getValue()));
+    else
+      A->render(Args, CmdArgs);
+  } else if (llvm::ErrorOr<std::string> CWD =
+                 VFS.getCurrentWorkingDirectory()) {
+    CmdArgs.push_back(Args.MakeArgString("-fdebug-compilation-dir=" + *CWD));
+  }
+  StringRef Path(CmdArgs.back());
+  return Path.substr(Path.find('=') + 1).data();
+}
+
+void tools::addDebugObjectName(const ArgList &Args, ArgStringList &CmdArgs,
+                               const char *DebugCompilationDir,
+                               const char *OutputFileName) {
+  // No need to generate a value for -object-file-name if it was provided.
+  for (auto *Arg : Args.filtered(options::OPT_Xclang))
+    if (StringRef(Arg->getValue()).starts_with("-object-file-name"))
+      return;
+
+  if (Args.hasArg(options::OPT_object_file_name_EQ))
+    return;
+
+  SmallString<128> ObjFileNameForDebug(OutputFileName);
+  if (ObjFileNameForDebug != "-" &&
+      !llvm::sys::path::is_absolute(ObjFileNameForDebug) &&
+      (!DebugCompilationDir ||
+       llvm::sys::path::is_absolute(DebugCompilationDir))) {
+    // Make the path absolute in the debug infos like MSVC does.
+    llvm::sys::fs::make_absolute(ObjFileNameForDebug);
+  }
+  // If the object file name is a relative path, then always use Windows
+  // backslash style as -object-file-name is used for embedding object file path
+  // in codeview and it can only be generated when targeting on Windows.
+  // Otherwise, just use native absolute path.
+  llvm::sys::path::Style Style =
+      llvm::sys::path::is_absolute(ObjFileNameForDebug)
+          ? llvm::sys::path::Style::native
+          : llvm::sys::path::Style::windows_backslash;
+  llvm::sys::path::remove_dots(ObjFileNameForDebug, /*remove_dot_dot=*/true,
+                               Style);
+  CmdArgs.push_back(
+      Args.MakeArgString(Twine("-object-file-name=") + ObjFileNameForDebug));
+}
+
+void tools::addDebugPrefixMapArg(const Driver &D, const ToolChain &TC,
+                                 const ArgList &Args, ArgStringList &CmdArgs) {
+  auto AddOneArg = [&](StringRef Map, StringRef Name) {
+    if (!Map.contains('='))
+      D.Diag(diag::err_drv_invalid_argument_to_option) << Map << Name;
+    else
+      CmdArgs.push_back(Args.MakeArgString("-fdebug-prefix-map=" + Map));
+  };
+
+  for (const Arg *A : Args.filtered(options::OPT_ffile_prefix_map_EQ,
+                                    options::OPT_fdebug_prefix_map_EQ)) {
+    AddOneArg(A->getValue(), A->getOption().getName());
+    A->claim();
+  }
+  std::string GlobalRemapEntry = TC.GetGlobalDebugPathRemapping();
+  if (GlobalRemapEntry.empty())
+    return;
+  AddOneArg(GlobalRemapEntry, "environment");
+}
+
+void tools::renderDebugInfoCompressionArgs(const ArgList &Args,
+                                           ArgStringList &CmdArgs,
+                                           const Driver &D,
+                                           const ToolChain &TC) {
+  const Arg *A = Args.getLastArg(options::OPT_gz_EQ);
+  if (!A)
+    return;
+  if (checkDebugInfoOption(A, Args, D, TC)) {
+    StringRef Value = A->getValue();
+    if (Value == "none") {
+      CmdArgs.push_back("--compress-debug-sections=none");
+    } else if (Value == "zlib") {
+      if (llvm::compression::zlib::isAvailable()) {
+        CmdArgs.push_back(
+            Args.MakeArgString("--compress-debug-sections=" + Twine(Value)));
+      } else {
+        D.Diag(diag::warn_debug_compression_unavailable) << "zlib";
+      }
+    } else if (Value == "zstd") {
+      if (llvm::compression::zstd::isAvailable()) {
+        CmdArgs.push_back(
+            Args.MakeArgString("--compress-debug-sections=" + Twine(Value)));
+      } else {
+        D.Diag(diag::warn_debug_compression_unavailable) << "zstd";
+      }
+    } else {
+      D.Diag(diag::err_drv_unsupported_option_argument)
+          << A->getSpelling() << Value;
+    }
+  }
+}
+
+void tools::renderDwarfFormat(const Driver &D, const llvm::Triple &T,
+                              const ArgList &Args, ArgStringList &CmdArgs,
+                              unsigned DwarfVersion) {
+  auto *DwarfFormatArg =
+      Args.getLastArg(options::OPT_gdwarf64, options::OPT_gdwarf32);
+  if (!DwarfFormatArg)
+    return;
+
+  if (DwarfFormatArg->getOption().matches(options::OPT_gdwarf64)) {
+    if (DwarfVersion < 3)
+      D.Diag(diag::err_drv_argument_only_allowed_with)
+          << DwarfFormatArg->getAsString(Args) << "DWARFv3 or greater";
+    else if (!T.isArch64Bit())
+      D.Diag(diag::err_drv_argument_only_allowed_with)
+          << DwarfFormatArg->getAsString(Args) << "64 bit architecture";
+    else if (!T.isOSBinFormatELF())
+      D.Diag(diag::err_drv_argument_only_allowed_with)
+          << DwarfFormatArg->getAsString(Args) << "ELF platforms";
+  }
+
+  DwarfFormatArg->render(Args, CmdArgs);
+}
+
+void tools::renderDebugOptions(
+    const ToolChain &TC, const Driver &D, const llvm::Triple &T,
+    const ArgList &Args, bool IRInput, ArgStringList &CmdArgs,
+    const InputInfo &Output, llvm::codegenoptions::DebugInfoKind &DebugInfoKind,
+    DwarfFissionKind &DwarfFission) {
+  if (Args.hasFlag(options::OPT_fdebug_info_for_profiling,
+                   options::OPT_fno_debug_info_for_profiling, false) &&
+      checkDebugInfoOption(
+          Args.getLastArg(options::OPT_fdebug_info_for_profiling), Args, D, TC))
+    CmdArgs.push_back("-fdebug-info-for-profiling");
+
+  // The 'g' groups options involve a somewhat intricate sequence of decisions
+  // about what to pass from the driver to the frontend, but by the time they
+  // reach cc1 they've been factored into three well-defined orthogonal choices:
+  //  * what level of debug info to generate
+  //  * what dwarf version to write
+  //  * what debugger tuning to use
+  // This avoids having to monkey around further in cc1 other than to disable
+  // codeview if not running in a Windows environment. Perhaps even that
+  // decision should be made in the driver as well though.
+  llvm::DebuggerKind DebuggerTuning = TC.getDefaultDebuggerTuning();
+
+  bool SplitDWARFInlining =
+      Args.hasFlag(options::OPT_fsplit_dwarf_inlining,
+                   options::OPT_fno_split_dwarf_inlining, false);
+
+  // Normally -gsplit-dwarf is only useful with -gN. For IR input, Clang does
+  // object file generation and no IR generation, -gN should not be needed. So
+  // allow -gsplit-dwarf with either -gN or IR input.
+  if (IRInput || Args.hasArg(options::OPT_g_Group)) {
+    Arg *SplitDWARFArg;
+    DwarfFission = getDebugFissionKind(D, Args, SplitDWARFArg);
+    if (DwarfFission != DwarfFissionKind::None &&
+        !checkDebugInfoOption(SplitDWARFArg, Args, D, TC)) {
+      DwarfFission = DwarfFissionKind::None;
+      SplitDWARFInlining = false;
+    }
+  }
+  if (const Arg *A = Args.getLastArg(options::OPT_g_Group)) {
+    DebugInfoKind = llvm::codegenoptions::DebugInfoConstructor;
+
+    // If the last option explicitly specified a debug-info level, use it.
+    if (checkDebugInfoOption(A, Args, D, TC) &&
+        A->getOption().matches(options::OPT_gN_Group)) {
+      DebugInfoKind = debugLevelToInfoKind(*A);
+      // For -g0 or -gline-tables-only, drop -gsplit-dwarf. This gets a bit more
+      // complicated if you've disabled inline info in the skeleton CUs
+      // (SplitDWARFInlining) - then there's value in composing split-dwarf and
+      // line-tables-only, so let those compose naturally in that case.
+      if (DebugInfoKind == llvm::codegenoptions::NoDebugInfo ||
+          DebugInfoKind == llvm::codegenoptions::DebugDirectivesOnly ||
+          (DebugInfoKind == llvm::codegenoptions::DebugLineTablesOnly &&
+           SplitDWARFInlining))
+        DwarfFission = DwarfFissionKind::None;
+    }
+  }
+
+  // If a debugger tuning argument appeared, remember it.
+  bool HasDebuggerTuning = false;
+  if (const Arg *A =
+          Args.getLastArg(options::OPT_gTune_Group, options::OPT_ggdbN_Group)) {
+    HasDebuggerTuning = true;
+    if (checkDebugInfoOption(A, Args, D, TC)) {
+      if (A->getOption().matches(options::OPT_glldb))
+        DebuggerTuning = llvm::DebuggerKind::LLDB;
+      else if (A->getOption().matches(options::OPT_gsce))
+        DebuggerTuning = llvm::DebuggerKind::SCE;
+      else if (A->getOption().matches(options::OPT_gdbx))
+        DebuggerTuning = llvm::DebuggerKind::DBX;
+      else
+        DebuggerTuning = llvm::DebuggerKind::GDB;
+    }
+  }
+
+  // If a -gdwarf argument appeared, remember it.
+  bool EmitDwarf = false;
+  if (const Arg *A = getDwarfNArg(Args))
+    EmitDwarf = checkDebugInfoOption(A, Args, D, TC);
+
+  bool EmitCodeView = false;
+  if (const Arg *A = Args.getLastArg(options::OPT_gcodeview))
+    EmitCodeView = checkDebugInfoOption(A, Args, D, TC);
+
+  // If the user asked for debug info but did not explicitly specify -gcodeview
+  // or -gdwarf, ask the toolchain for the default format.
+  if (!EmitCodeView && !EmitDwarf &&
+      DebugInfoKind != llvm::codegenoptions::NoDebugInfo) {
+    switch (TC.getDefaultDebugFormat()) {
+    case llvm::codegenoptions::DIF_CodeView:
+      EmitCodeView = true;
+      break;
+    case llvm::codegenoptions::DIF_DWARF:
+      EmitDwarf = true;
+      break;
+    }
+  }
+
+  unsigned RequestedDWARFVersion = 0; // DWARF version requested by the user
+  unsigned EffectiveDWARFVersion = 0; // DWARF version TC can generate. It may
+                                      // be lower than what the user wanted.
+  if (EmitDwarf) {
+    RequestedDWARFVersion = getDwarfVersion(TC, Args);
+    // Clamp effective DWARF version to the max supported by the toolchain.
+    EffectiveDWARFVersion =
+        std::min(RequestedDWARFVersion, TC.getMaxDwarfVersion());
+  } else {
+    Args.ClaimAllArgs(options::OPT_fdebug_default_version);
+  }
+
+  // -gline-directives-only supported only for the DWARF debug info.
+  if (RequestedDWARFVersion == 0 &&
+      DebugInfoKind == llvm::codegenoptions::DebugDirectivesOnly)
+    DebugInfoKind = llvm::codegenoptions::NoDebugInfo;
+
+  // strict DWARF is set to false by default. But for DBX, we need it to be set
+  // as true by default.
+  if (const Arg *A = Args.getLastArg(options::OPT_gstrict_dwarf))
+    (void)checkDebugInfoOption(A, Args, D, TC);
+  if (Args.hasFlag(options::OPT_gstrict_dwarf, options::OPT_gno_strict_dwarf,
+                   DebuggerTuning == llvm::DebuggerKind::DBX))
+    CmdArgs.push_back("-gstrict-dwarf");
+
+  // And we handle flag -grecord-gcc-switches later with DWARFDebugFlags.
+  Args.ClaimAllArgs(options::OPT_g_flags_Group);
+
+  // Column info is included by default for everything except SCE and
+  // CodeView. Clang doesn't track end columns, just starting columns, which,
+  // in theory, is fine for CodeView (and PDB).  In practice, however, the
+  // Microsoft debuggers don't handle missing end columns well, and the AIX
+  // debugger DBX also doesn't handle the columns well, so it's better not to
+  // include any column info.
+  if (const Arg *A = Args.getLastArg(options::OPT_gcolumn_info))
+    (void)checkDebugInfoOption(A, Args, D, TC);
+  if (!Args.hasFlag(options::OPT_gcolumn_info, options::OPT_gno_column_info,
+                    !EmitCodeView &&
+                        (DebuggerTuning != llvm::DebuggerKind::SCE &&
+                         DebuggerTuning != llvm::DebuggerKind::DBX)))
+    CmdArgs.push_back("-gno-column-info");
+
+  // FIXME: Move backend command line options to the module.
+  if (Args.hasFlag(options::OPT_gmodules, options::OPT_gno_modules, false)) {
+    // If -gline-tables-only or -gline-directives-only is the last option it
+    // wins.
+    if (checkDebugInfoOption(Args.getLastArg(options::OPT_gmodules), Args, D,
+                             TC)) {
+      if (DebugInfoKind != llvm::codegenoptions::DebugLineTablesOnly &&
+          DebugInfoKind != llvm::codegenoptions::DebugDirectivesOnly) {
+        DebugInfoKind = llvm::codegenoptions::DebugInfoConstructor;
+        CmdArgs.push_back("-dwarf-ext-refs");
+        CmdArgs.push_back("-fmodule-format=obj");
+      }
+    }
+  }
+
+  if (T.isOSBinFormatELF() && SplitDWARFInlining)
+    CmdArgs.push_back("-fsplit-dwarf-inlining");
+
+  // After we've dealt with all combinations of things that could
+  // make DebugInfoKind be other than None or DebugLineTablesOnly,
+  // figure out if we need to "upgrade" it to standalone debug info.
+  // We parse these two '-f' options whether or not they will be used,
+  // to claim them even if you wrote "-fstandalone-debug -gline-tables-only"
+  bool NeedFullDebug = Args.hasFlag(
+      options::OPT_fstandalone_debug, options::OPT_fno_standalone_debug,
+      DebuggerTuning == llvm::DebuggerKind::LLDB ||
+          TC.GetDefaultStandaloneDebug());
+  if (const Arg *A = Args.getLastArg(options::OPT_fstandalone_debug))
+    (void)checkDebugInfoOption(A, Args, D, TC);
+
+  if (DebugInfoKind == llvm::codegenoptions::LimitedDebugInfo ||
+      DebugInfoKind == llvm::codegenoptions::DebugInfoConstructor) {
+    if (Args.hasFlag(options::OPT_fno_eliminate_unused_debug_types,
+                     options::OPT_feliminate_unused_debug_types, false))
+      DebugInfoKind = llvm::codegenoptions::UnusedTypeInfo;
+    else if (NeedFullDebug)
+      DebugInfoKind = llvm::codegenoptions::FullDebugInfo;
+  }
+
+  if (Args.hasFlag(options::OPT_gembed_source, options::OPT_gno_embed_source,
+                   false)) {
+    // Source embedding is a vendor extension to DWARF v5. By now we have
+    // checked if a DWARF version was stated explicitly, and have otherwise
+    // fallen back to the target default, so if this is still not at least 5
+    // we emit an error.
+    const Arg *A = Args.getLastArg(options::OPT_gembed_source);
+    if (RequestedDWARFVersion < 5)
+      D.Diag(diag::err_drv_argument_only_allowed_with)
+          << A->getAsString(Args) << "-gdwarf-5";
+    else if (EffectiveDWARFVersion < 5)
+      // The toolchain has reduced allowed dwarf version, so we can't enable
+      // -gembed-source.
+      D.Diag(diag::warn_drv_dwarf_version_limited_by_target)
+          << A->getAsString(Args) << TC.getTripleString() << 5
+          << EffectiveDWARFVersion;
+    else if (checkDebugInfoOption(A, Args, D, TC))
+      CmdArgs.push_back("-gembed-source");
+  }
+
+  if (EmitCodeView) {
+    CmdArgs.push_back("-gcodeview");
+
+    Args.addOptInFlag(CmdArgs, options::OPT_gcodeview_ghash,
+                      options::OPT_gno_codeview_ghash);
+
+    Args.addOptOutFlag(CmdArgs, options::OPT_gcodeview_command_line,
+                       options::OPT_gno_codeview_command_line);
+  }
+
+  Args.addOptOutFlag(CmdArgs, options::OPT_ginline_line_tables,
+                     options::OPT_gno_inline_line_tables);
+
+  // When emitting remarks, we need at least debug lines in the output.
+  if (willEmitRemarks(Args) &&
+      DebugInfoKind <= llvm::codegenoptions::DebugDirectivesOnly)
+    DebugInfoKind = llvm::codegenoptions::DebugLineTablesOnly;
+
+  // Adjust the debug info kind for the given toolchain.
+  TC.adjustDebugInfoKind(DebugInfoKind, Args);
+
+  // On AIX, the debugger tuning option can be omitted if it is not explicitly
+  // set.
+  renderDebugEnablingArgs(Args, CmdArgs, DebugInfoKind, EffectiveDWARFVersion,
+                          T.isOSAIX() && !HasDebuggerTuning
+                              ? llvm::DebuggerKind::Default
+                              : DebuggerTuning);
+
+  // -fdebug-macro turns on macro debug info generation.
+  if (Args.hasFlag(options::OPT_fdebug_macro, options::OPT_fno_debug_macro,
+                   false))
+    if (checkDebugInfoOption(Args.getLastArg(options::OPT_fdebug_macro), Args,
+                             D, TC))
+      CmdArgs.push_back("-debug-info-macro");
+
+  // -ggnu-pubnames turns on gnu style pubnames in the backend.
+  const auto *PubnamesArg =
+      Args.getLastArg(options::OPT_ggnu_pubnames, options::OPT_gno_gnu_pubnames,
+                      options::OPT_gpubnames, options::OPT_gno_pubnames);
+  if (DwarfFission != DwarfFissionKind::None ||
+      (PubnamesArg && checkDebugInfoOption(PubnamesArg, Args, D, TC))) {
+    const bool OptionSet =
+        (PubnamesArg &&
+         (PubnamesArg->getOption().matches(options::OPT_gpubnames) ||
+          PubnamesArg->getOption().matches(options::OPT_ggnu_pubnames)));
+    if ((DebuggerTuning != llvm::DebuggerKind::LLDB || OptionSet) &&
+        (!PubnamesArg ||
+         (!PubnamesArg->getOption().matches(options::OPT_gno_gnu_pubnames) &&
+          !PubnamesArg->getOption().matches(options::OPT_gno_pubnames))))
+      CmdArgs.push_back(PubnamesArg && PubnamesArg->getOption().matches(
+                                           options::OPT_gpubnames)
+                            ? "-gpubnames"
+                            : "-ggnu-pubnames");
+  }
+  const auto *SimpleTemplateNamesArg =
+      Args.getLastArg(options::OPT_gsimple_template_names,
+                      options::OPT_gno_simple_template_names);
+  bool ForwardTemplateParams = DebuggerTuning == llvm::DebuggerKind::SCE;
+  if (SimpleTemplateNamesArg &&
+      checkDebugInfoOption(SimpleTemplateNamesArg, Args, D, TC)) {
+    const auto &Opt = SimpleTemplateNamesArg->getOption();
+    if (Opt.matches(options::OPT_gsimple_template_names)) {
+      ForwardTemplateParams = true;
+      CmdArgs.push_back("-gsimple-template-names=simple");
+    }
+  }
+
+  // Emit DW_TAG_template_alias for template aliases? True by default for SCE.
+  bool UseDebugTemplateAlias =
+      DebuggerTuning == llvm::DebuggerKind::SCE && RequestedDWARFVersion >= 4;
+  if (const auto *DebugTemplateAlias = Args.getLastArg(
+          options::OPT_gtemplate_alias, options::OPT_gno_template_alias)) {
+    // DW_TAG_template_alias is only supported from DWARFv5 but if a user
+    // asks for it we should let them have it (if the target supports it).
+    if (checkDebugInfoOption(DebugTemplateAlias, Args, D, TC)) {
+      const auto &Opt = DebugTemplateAlias->getOption();
+      UseDebugTemplateAlias = Opt.matches(options::OPT_gtemplate_alias);
+    }
+  }
+  if (UseDebugTemplateAlias)
+    CmdArgs.push_back("-gtemplate-alias");
+
+  if (const Arg *A = Args.getLastArg(options::OPT_gsrc_hash_EQ)) {
+    StringRef v = A->getValue();
+    CmdArgs.push_back(Args.MakeArgString("-gsrc-hash=" + v));
+  }
+
+  Args.addOptInFlag(CmdArgs, options::OPT_fdebug_ranges_base_address,
+                    options::OPT_fno_debug_ranges_base_address);
+
+  // -gdwarf-aranges turns on the emission of the aranges section in the
+  // backend.
+  if (const Arg *A = Args.getLastArg(options::OPT_gdwarf_aranges);
+      A && checkDebugInfoOption(A, Args, D, TC)) {
+    CmdArgs.push_back("-mllvm");
+    CmdArgs.push_back("-generate-arange-section");
+  }
+
+  Args.addOptInFlag(CmdArgs, options::OPT_fforce_dwarf_frame,
+                    options::OPT_fno_force_dwarf_frame);
+
+  bool EnableTypeUnits = false;
+  if (Args.hasFlag(options::OPT_fdebug_types_section,
+                   options::OPT_fno_debug_types_section, false)) {
+    if (!(T.isOSBinFormatELF() || T.isOSBinFormatWasm())) {
+      D.Diag(diag::err_drv_unsupported_opt_for_target)
+          << Args.getLastArg(options::OPT_fdebug_types_section)
+                 ->getAsString(Args)
+          << T.getTriple();
+    } else if (checkDebugInfoOption(
+                   Args.getLastArg(options::OPT_fdebug_types_section), Args, D,
+                   TC)) {
+      EnableTypeUnits = true;
+      CmdArgs.push_back("-mllvm");
+      CmdArgs.push_back("-generate-type-units");
+    }
+  }
+
+  if (const Arg *A =
+          Args.getLastArg(options::OPT_gomit_unreferenced_methods,
+                          options::OPT_gno_omit_unreferenced_methods))
+    (void)checkDebugInfoOption(A, Args, D, TC);
+  if (Args.hasFlag(options::OPT_gomit_unreferenced_methods,
+                   options::OPT_gno_omit_unreferenced_methods, false) &&
+      (DebugInfoKind == llvm::codegenoptions::DebugInfoConstructor ||
+       DebugInfoKind == llvm::codegenoptions::LimitedDebugInfo) &&
+      !EnableTypeUnits) {
+    CmdArgs.push_back("-gomit-unreferenced-methods");
+  }
+
+  // To avoid join/split of directory+filename, the integrated assembler prefers
+  // the directory form of .file on all DWARF versions. GNU as doesn't allow the
+  // form before DWARF v5.
+  if (!Args.hasFlag(options::OPT_fdwarf_directory_asm,
+                    options::OPT_fno_dwarf_directory_asm,
+                    TC.useIntegratedAs() || EffectiveDWARFVersion >= 5))
+    CmdArgs.push_back("-fno-dwarf-directory-asm");
+
+  // Decide how to render forward declarations of template instantiations.
+  // SCE wants full descriptions, others just get them in the name.
+  if (ForwardTemplateParams)
+    CmdArgs.push_back("-debug-forward-template-params");
+
+  // Do we need to explicitly import anonymous namespaces into the parent
+  // scope?
+  if (DebuggerTuning == llvm::DebuggerKind::SCE)
+    CmdArgs.push_back("-dwarf-explicit-import");
+
+  renderDwarfFormat(D, T, Args, CmdArgs, EffectiveDWARFVersion);
+  renderDebugInfoCompressionArgs(Args, CmdArgs, D, TC);
+
+  // This controls whether or not we perform JustMyCode instrumentation.
+  if (Args.hasFlag(options::OPT_fjmc, options::OPT_fno_jmc, false)) {
+    if (TC.getTriple().isOSBinFormatELF() ||
+        TC.getTriple().isWindowsMSVCEnvironment()) {
+      if (DebugInfoKind >= llvm::codegenoptions::DebugInfoConstructor)
+        CmdArgs.push_back("-fjmc");
+      else if (D.IsCLMode())
+        D.Diag(clang::diag::warn_drv_jmc_requires_debuginfo) << "/JMC"
+                                                             << "'/Zi', '/Z7'";
+      else
+        D.Diag(clang::diag::warn_drv_jmc_requires_debuginfo) << "-fjmc"
+                                                             << "-g";
+    } else {
+      D.Diag(clang::diag::warn_drv_fjmc_for_elf_only);
+    }
+  }
+
+  // Add in -fdebug-compilation-dir if necessary.
+  const char *DebugCompilationDir =
+      addDebugCompDirArg(Args, CmdArgs, D.getVFS());
+
+  addDebugPrefixMapArg(D, TC, Args, CmdArgs);
+
+  // Add the output path to the object file for CodeView debug infos.
+  if (EmitCodeView && Output.isFilename())
+    addDebugObjectName(Args, CmdArgs, DebugCompilationDir,
+                       Output.getFilename());
 }

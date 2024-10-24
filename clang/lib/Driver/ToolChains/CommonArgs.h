@@ -24,6 +24,8 @@ namespace clang {
 namespace driver {
 namespace tools {
 
+enum class DwarfFissionKind { None, Split, Single };
+
 void addPathIfExists(const Driver &D, const Twine &Path,
                      ToolChain::path_list &Paths);
 
@@ -146,6 +148,10 @@ bool isObjCAutoRefCount(const llvm::opt::ArgList &Args);
 llvm::StringRef getLTOParallelism(const llvm::opt::ArgList &Args,
                                   const Driver &D);
 
+DwarfFissionKind getDebugFissionKind(const Driver &D,
+                                     const llvm::opt::ArgList &Args,
+                                     llvm::opt::Arg *&Arg);
+
 bool areOptimizationsEnabled(const llvm::opt::ArgList &Args);
 
 bool isUseSeparateSections(const llvm::Triple &Triple);
@@ -264,6 +270,47 @@ bool shouldRecordCommandLine(const ToolChain &TC,
 
 void renderCommonIntegerOverflowOptions(const llvm::opt::ArgList &Args,
                                         llvm::opt::ArgStringList &CmdArgs);
+
+bool checkDebugInfoOption(const llvm::opt::Arg *A,
+                          const llvm::opt::ArgList &Args, const Driver &D,
+                          const ToolChain &TC);
+
+/// Add an option to specify the debug compilation directory.
+const char *addDebugCompDirArg(const llvm::opt::ArgList &Args,
+                               llvm::opt::ArgStringList &CmdArgs,
+                               const llvm::vfs::FileSystem &VFS);
+
+void addDebugObjectName(const llvm::opt::ArgList &Args,
+                        llvm::opt::ArgStringList &CmdArgs,
+                        const char *DebugCompilationDir,
+                        const char *OutputFileName);
+
+/// Add a CC1 and CC1AS option to specify the debug file path prefix map.
+void addDebugPrefixMapArg(const Driver &D, const ToolChain &TC,
+                          const llvm::opt::ArgList &Args,
+                          llvm::opt::ArgStringList &CmdArgs);
+
+void renderDebugEnablingArgs(const llvm::opt::ArgList &Args,
+                             llvm::opt::ArgStringList &CmdArgs,
+                             llvm::codegenoptions::DebugInfoKind DebugInfoKind,
+                             unsigned DwarfVersion,
+                             llvm::DebuggerKind DebuggerTuning);
+
+void renderDebugInfoCompressionArgs(const llvm::opt::ArgList &Args,
+                                    llvm::opt::ArgStringList &CmdArgs,
+                                    const Driver &D, const ToolChain &TC);
+
+void renderDwarfFormat(const Driver &D, const llvm::Triple &T,
+                       const llvm::opt::ArgList &Args,
+                       llvm::opt::ArgStringList &CmdArgs,
+                       unsigned DwarfVersion);
+
+void renderDebugOptions(const ToolChain &TC, const Driver &D,
+                        const llvm::Triple &T, const llvm::opt::ArgList &Args,
+                        bool IRInput, llvm::opt::ArgStringList &CmdArgs,
+                        const InputInfo &Output,
+                        llvm::codegenoptions::DebugInfoKind &DebugInfoKind,
+                        DwarfFissionKind &DwarfFission);
 
 } // end namespace tools
 } // end namespace driver

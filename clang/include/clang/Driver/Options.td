@@ -1768,7 +1768,7 @@ def fno_auto_profile_accurate : Flag<["-"], "fno-auto-profile-accurate">,
     Group<f_Group>, Alias<fno_profile_sample_accurate>;
 def fdebug_compilation_dir_EQ : Joined<["-"], "fdebug-compilation-dir=">,
     Group<f_Group>,
-    Visibility<[ClangOption, CC1Option, CC1AsOption, CLOption, DXCOption]>,
+    Visibility<[ClangOption, CC1Option, CC1AsOption, CLOption, DXCOption, FlangOption, FC1Option]>,
     HelpText<"The compilation directory to embed in the debug info">,
     MarshallingInfoString<CodeGenOpts<"DebugCompilationDir">>;
 def fdebug_compilation_dir : Separate<["-"], "fdebug-compilation-dir">,
@@ -2161,7 +2161,7 @@ def fdwarf2_cfi_asm : Flag<["-"], "fdwarf2-cfi-asm">, Group<clang_ignored_f_Grou
 def fno_dwarf2_cfi_asm : Flag<["-"], "fno-dwarf2-cfi-asm">, Group<clang_ignored_f_Group>;
 defm dwarf_directory_asm : BoolFOption<"dwarf-directory-asm",
   CodeGenOpts<"NoDwarfDirectoryAsm">, DefaultFalse,
-  NegFlag<SetTrue, [], [ClangOption, CC1Option]>,
+  NegFlag<SetTrue, [], [ClangOption, CC1Option, FlangOption, FC1Option]>,
   PosFlag<SetFalse>>;
 defm elide_constructors : BoolFOption<"elide-constructors",
   LangOpts<"ElideConstructors">, DefaultTrue,
@@ -2174,7 +2174,7 @@ def fno_elide_type : Flag<["-"], "fno-elide-type">, Group<f_Group>,
     MarshallingInfoNegativeFlag<DiagnosticOpts<"ElideType">>;
 def feliminate_unused_debug_symbols : Flag<["-"], "feliminate-unused-debug-symbols">, Group<f_Group>;
 defm eliminate_unused_debug_types : OptOutCC1FFlag<"eliminate-unused-debug-types",
-  "Do not emit ", "Emit ", " debug info for defined but unused types", [ClangOption, CLOption]>;
+  "Do not emit ", "Emit ", " debug info for defined but unused types", [ClangOption, CLOption, FlangOption]>;
 def femit_all_decls : Flag<["-"], "femit-all-decls">, Group<f_Group>,
   Visibility<[ClangOption, CC1Option]>,
   HelpText<"Emit all declarations, even if unused">,
@@ -3939,15 +3939,17 @@ def ftrivial_auto_var_init_max_size : Joined<["-"], "ftrivial-auto-var-init-max-
   HelpText<"Stop initializing trivial automatic stack variables if var size exceeds the specified number of instances (in bytes)">,
   MarshallingInfoInt<LangOpts<"TrivialAutoVarInitMaxSize">>;
 def fstandalone_debug : Flag<["-"], "fstandalone-debug">, Group<f_Group>,
-  Visibility<[ClangOption, CLOption, DXCOption]>,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
   HelpText<"Emit full debug info for all types used by the program">;
 def fno_standalone_debug : Flag<["-"], "fno-standalone-debug">, Group<f_Group>,
-  Visibility<[ClangOption, CLOption, DXCOption]>,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
   HelpText<"Limit debug information produced to reduce size of debug binary">;
 def flimit_debug_info : Flag<["-"], "flimit-debug-info">,
-  Visibility<[ClangOption, CLOption, DXCOption]>, Alias<fno_standalone_debug>;
+  Alias<fno_standalone_debug>,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>;
 def fno_limit_debug_info : Flag<["-"], "fno-limit-debug-info">,
-  Visibility<[ClangOption, CLOption, DXCOption]>, Alias<fstandalone_debug>;
+  Alias<fstandalone_debug>,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>;
 def fdebug_macro : Flag<["-"], "fdebug-macro">, Group<f_Group>,
   Visibility<[ClangOption, CLOption, DXCOption]>,
   HelpText<"Emit macro debug information">;
@@ -4358,13 +4360,15 @@ def fzero_call_used_regs_EQ
       MarshallingInfoEnum<CodeGenOpts<"ZeroCallUsedRegs">, "Skip">;
 
 def fdebug_types_section: Flag <["-"], "fdebug-types-section">, Group<f_Group>,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
   HelpText<"Place debug types in their own section (ELF Only)">;
-def fno_debug_types_section: Flag<["-"], "fno-debug-types-section">, Group<f_Group>;
+def fno_debug_types_section: Flag<["-"], "fno-debug-types-section">, Group<f_Group>,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>;
 defm debug_ranges_base_address : BoolFOption<"debug-ranges-base-address",
   CodeGenOpts<"DebugRangesBaseAddress">, DefaultFalse,
-  PosFlag<SetTrue, [], [ClangOption, CC1Option],
+  PosFlag<SetTrue, [], [ClangOption, CC1Option, FlangOption, FC1Option],
           "Use DWARF base address selection entries in .debug_ranges">,
-  NegFlag<SetFalse>>;
+  NegFlag<SetFalse, [], [ClangOption, CC1Option, FlangOption, FC1Option]>>;
 defm split_dwarf_inlining : BoolFOption<"split-dwarf-inlining",
   CodeGenOpts<"SplitDwarfInlining">, DefaultFalse,
   NegFlag<SetFalse, [], [ClangOption]>,
@@ -4419,38 +4423,63 @@ def gline_tables_only : Flag<["-"], "gline-tables-only">, Group<gN_Group>,
 def gline_directives_only : Flag<["-"], "gline-directives-only">, Group<gN_Group>,
   Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
   HelpText<"Emit debug line info directives only">;
-def gmlt : Flag<["-"], "gmlt">, Alias<gline_tables_only>;
-def g0 : Flag<["-"], "g0">, Group<gN_Group>, Visibility<[ClangOption, FlangOption]>;
-def g1 : Flag<["-"], "g1">, Group<gN_Group>, Visibility<[ClangOption, FlangOption]>, Alias<gline_tables_only>;
-def g2 : Flag<["-"], "g2">, Group<gN_Group>, Visibility<[ClangOption, FlangOption]>;
-def g3 : Flag<["-"], "g3">, Group<gN_Group>, Visibility<[ClangOption, FlangOption]>;
-def ggdb : Flag<["-"], "ggdb">, Group<gTune_Group>;
-def ggdb0 : Flag<["-"], "ggdb0">, Group<ggdbN_Group>;
-def ggdb1 : Flag<["-"], "ggdb1">, Group<ggdbN_Group>;
-def ggdb2 : Flag<["-"], "ggdb2">, Group<ggdbN_Group>;
-def ggdb3 : Flag<["-"], "ggdb3">, Group<ggdbN_Group>;
-def glldb : Flag<["-"], "glldb">, Group<gTune_Group>;
-def gsce : Flag<["-"], "gsce">, Group<gTune_Group>;
-def gdbx : Flag<["-"], "gdbx">, Group<gTune_Group>;
+def gmlt : Flag<["-"], "gmlt">, Alias<gline_tables_only>,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>;
+def g0 : Flag<["-"], "g0">, Group<gN_Group>,
+  Visibility<[ClangOption, FlangOption]>;
+def g1 : Flag<["-"], "g1">, Group<gN_Group>, Alias<gline_tables_only>,
+  Visibility<[ClangOption, FlangOption]>;
+def g2 : Flag<["-"], "g2">, Group<gN_Group>,
+  Visibility<[ClangOption, FlangOption]>;
+def g3 : Flag<["-"], "g3">, Group<gN_Group>,
+  Visibility<[ClangOption, FlangOption]>;
+def ggdb : Flag<["-"], "ggdb">,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
+  Group<gTune_Group>;
+def ggdb0 : Flag<["-"], "ggdb0">,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
+  Group<ggdbN_Group>;
+def ggdb1 : Flag<["-"], "ggdb1">,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
+  Group<ggdbN_Group>;
+def ggdb2 : Flag<["-"], "ggdb2">,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
+  Group<ggdbN_Group>;
+def ggdb3 : Flag<["-"], "ggdb3">,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
+  Group<ggdbN_Group>;
+def glldb : Flag<["-"], "glldb">,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
+  Group<gTune_Group>;
+def gsce : Flag<["-"], "gsce">,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
+  Group<gTune_Group>;
+def gdbx : Flag<["-"], "gdbx">,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
+  Group<gTune_Group>;
 // Equivalent to our default dwarf version. Forces usual dwarf emission when
 // CodeView is enabled.
 def gdwarf : Flag<["-"], "gdwarf">, Group<g_Group>,
-  Visibility<[ClangOption, CLOption, DXCOption]>,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
   HelpText<"Generate source-level debug information with the default dwarf version">;
 def gdwarf_2 : Flag<["-"], "gdwarf-2">, Group<g_Group>,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
   HelpText<"Generate source-level debug information with dwarf version 2">;
 def gdwarf_3 : Flag<["-"], "gdwarf-3">, Group<g_Group>,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
   HelpText<"Generate source-level debug information with dwarf version 3">;
 def gdwarf_4 : Flag<["-"], "gdwarf-4">, Group<g_Group>,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
   HelpText<"Generate source-level debug information with dwarf version 4">;
 def gdwarf_5 : Flag<["-"], "gdwarf-5">, Group<g_Group>,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
   HelpText<"Generate source-level debug information with dwarf version 5">;
 def gdwarf64 : Flag<["-"], "gdwarf64">, Group<g_Group>,
-  Visibility<[ClangOption, CC1Option, CC1AsOption]>,
+  Visibility<[ClangOption, CC1Option, CC1AsOption, FlangOption, FC1Option]>,
   HelpText<"Enables DWARF64 format for ELF binaries, if debug information emission is enabled.">,
   MarshallingInfoFlag<CodeGenOpts<"Dwarf64">>;
 def gdwarf32 : Flag<["-"], "gdwarf32">, Group<g_Group>,
-  Visibility<[ClangOption, CC1Option, CC1AsOption]>,
+  Visibility<[ClangOption, CC1Option, CC1AsOption, FlangOption, FC1Option]>,
   HelpText<"Enables DWARF32 format for ELF binaries, if debug information emission is enabled.">;
 
 def gcodeview : Flag<["-"], "gcodeview">,
@@ -4488,28 +4517,29 @@ def : Flag<["-"], "grecord-gcc-switches">, Alias<grecord_command_line>;
 def : Flag<["-"], "gno-record-gcc-switches">, Alias<gno_record_command_line>;
 defm strict_dwarf : BoolOption<"g", "strict-dwarf",
   CodeGenOpts<"DebugStrictDwarf">, DefaultFalse,
-  PosFlag<SetTrue, [], [ClangOption, CC1Option],
+  PosFlag<SetTrue, [], [ClangOption, CC1Option, FlangOption, FC1Option],
           "Restrict DWARF features to those defined in "
           "the specified version, avoiding features from later versions.">,
-  NegFlag<SetFalse>, BothFlags<[], [ClangOption, CLOption, DXCOption]>>,
+  NegFlag<SetFalse>, BothFlags<[], [ClangOption, CLOption, DXCOption, FlangOption]>>,
   Group<g_flags_Group>;
 defm omit_unreferenced_methods : BoolGOption<"omit-unreferenced-methods",
   CodeGenOpts<"DebugOmitUnreferencedMethods">, DefaultFalse,
   NegFlag<SetFalse>,
-  PosFlag<SetTrue, [], [CC1Option]>, BothFlags<[], [ClangOption, CLOption, DXCOption]>>;
+  PosFlag<SetTrue, [], [CC1Option, FC1Option]>,
+  BothFlags<[], [ClangOption, CLOption, DXCOption, FlangOption]>>;
 defm column_info : BoolOption<"g", "column-info",
   CodeGenOpts<"DebugColumnInfo">, DefaultTrue,
-  NegFlag<SetFalse, [], [ClangOption, CC1Option]>,
-  PosFlag<SetTrue>, BothFlags<[], [ClangOption, CLOption, DXCOption]>>,
+  NegFlag<SetFalse, [], [ClangOption, CC1Option, FlangOption, FC1Option]>,
+  PosFlag<SetTrue>, BothFlags<[], [ClangOption, CLOption, DXCOption, FlangOption]>>,
   Group<g_flags_Group>;
 def gsplit_dwarf : Flag<["-"], "gsplit-dwarf">, Group<g_flags_Group>,
-  Visibility<[ClangOption, CLOption, DXCOption]>;
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>;
 def gsplit_dwarf_EQ : Joined<["-"], "gsplit-dwarf=">, Group<g_flags_Group>,
-  Visibility<[ClangOption, CLOption, DXCOption]>,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
   HelpText<"Set DWARF fission mode">,
   Values<"split,single">;
 def gno_split_dwarf : Flag<["-"], "gno-split-dwarf">, Group<g_flags_Group>,
-  Visibility<[ClangOption, CLOption, DXCOption]>;
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>;
 def gtemplate_alias : Flag<["-"], "gtemplate-alias">, Group<g_flags_Group>, Visibility<[ClangOption, CC1Option]>;
 def gno_template_alias : Flag<["-"], "gno-template-alias">, Group<g_flags_Group>, Visibility<[ClangOption]>;
 def gsimple_template_names : Flag<["-"], "gsimple-template-names">, Group<g_flags_Group>;
@@ -4527,12 +4557,15 @@ def gsrc_hash_EQ : Joined<["-"], "gsrc-hash=">,
 def gno_simple_template_names : Flag<["-"], "gno-simple-template-names">,
                                 Group<g_flags_Group>;
 def ggnu_pubnames : Flag<["-"], "ggnu-pubnames">, Group<g_flags_Group>,
-  Visibility<[ClangOption, CC1Option]>;
-def gno_gnu_pubnames : Flag<["-"], "gno-gnu-pubnames">, Group<g_flags_Group>;
+  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>;
+def gno_gnu_pubnames : Flag<["-"], "gno-gnu-pubnames">, Group<g_flags_Group>,
+  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>;
 def gpubnames : Flag<["-"], "gpubnames">, Group<g_flags_Group>,
-  Visibility<[ClangOption, CC1Option]>;
-def gno_pubnames : Flag<["-"], "gno-pubnames">, Group<g_flags_Group>;
-def gdwarf_aranges : Flag<["-"], "gdwarf-aranges">, Group<g_flags_Group>;
+  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>;
+def gno_pubnames : Flag<["-"], "gno-pubnames">, Group<g_flags_Group>,
+  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>;
+def gdwarf_aranges : Flag<["-"], "gdwarf-aranges">, Group<g_flags_Group>,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>;
 def gmodules : Flag <["-"], "gmodules">, Group<gN_Group>,
   HelpText<"Generate debug info with external references to clang modules"
            " or precompiled headers">;
@@ -7183,6 +7216,13 @@ def debug_info_kind_EQ : Joined<["-"], "debug-info-kind=">;
 def record_command_line : Separate<["-"], "record-command-line">,
   HelpText<"The string to embed in the .LLVM.command.line section.">,
   MarshallingInfoString<CodeGenOpts<"RecordCommandLine">>;
+def debugger_tuning_EQ : Joined<["-"], "debugger-tuning=">,
+  Values<"gdb,lldb,sce,dbx">,
+  NormalizedValuesScope<"llvm::DebuggerKind">,
+  NormalizedValues<["GDB", "LLDB", "SCE", "DBX"]>,
+  MarshallingInfoEnum<CodeGenOpts<"DebuggerTuning">, "Default">;
+def dwarf_version_EQ : Joined<["-"], "dwarf-version=">,
+  MarshallingInfoInt<CodeGenOpts<"DwarfVersion">>;
 
 } // let Visibility = [CC1Option, CC1AsOption, FC1Option]
 
@@ -7194,12 +7234,6 @@ def debug_info_macro : Flag<["-"], "debug-info-macro">,
 def default_function_attr : Separate<["-"], "default-function-attr">,
   HelpText<"Apply given attribute to all functions">,
   MarshallingInfoStringVector<CodeGenOpts<"DefaultFunctionAttrs">>;
-def dwarf_version_EQ : Joined<["-"], "dwarf-version=">,
-  MarshallingInfoInt<CodeGenOpts<"DwarfVersion">>;
-def debugger_tuning_EQ : Joined<["-"], "debugger-tuning=">,
-  Values<"gdb,lldb,sce,dbx">,
-  NormalizedValuesScope<"llvm::DebuggerKind">, NormalizedValues<["GDB", "LLDB", "SCE", "DBX"]>,
-  MarshallingInfoEnum<CodeGenOpts<"DebuggerTuning">, "Default">;
 def dwarf_debug_flags : Separate<["-"], "dwarf-debug-flags">,
   HelpText<"The string to embed in the Dwarf debug flags record.">,
   MarshallingInfoString<CodeGenOpts<"DwarfDebugFlags">>;
