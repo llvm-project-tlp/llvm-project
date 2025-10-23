@@ -193,6 +193,9 @@ void Flang::addDebugOptions(const llvm::opt::ArgList &Args, const JobAction &JA,
 
 void Flang::addCodegenOptions(const ArgList &Args,
                               ArgStringList &CmdArgs) const {
+  const ToolChain &TC = getToolChain();
+  const Driver &D = TC.getDriver();
+
   Arg *stackArrays =
       Args.getLastArg(options::OPT_Ofast, options::OPT_fstack_arrays,
                       options::OPT_fno_stack_arrays);
@@ -216,6 +219,21 @@ void Flang::addCodegenOptions(const ArgList &Args,
       getToolChain().getDriver().Diag(diag::err_drv_unsupported_option_argument)
           << "-frepack-arrays-contiguity=" << arg;
     }
+
+  const llvm::Triple &Triple = TC.getTriple();
+  bool UseSeparateSections = isUseSeparateSections(Triple);
+  if (Args.hasFlag(options::OPT_ffunction_sections,
+                   options::OPT_fno_function_sections, UseSeparateSections))
+    CmdArgs.push_back("-ffunction-sections");
+  if (Args.hasArg(options::OPT_flto) || Args.hasArg(options::OPT_flto_EQ)) {
+    // TODO: -ffunction-sections is not yet enabled for LTO. Until it is, emit
+    // a warning so users are not surprised
+    DiagnosticsEngine &Diags = D.getDiags();
+    unsigned DiagID = Diags.getCustomDiagID(
+        DiagnosticsEngine::Warning,
+        "'-ffunction-sections' is not yet supported with LTO");
+    Diags.Report(DiagID);
+  }
 
   Args.addAllArgs(
       CmdArgs,

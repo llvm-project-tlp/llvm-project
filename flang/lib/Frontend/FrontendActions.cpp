@@ -1343,9 +1343,12 @@ void CodeGenAction::executeAction() {
   // and the command-line target option if specified, or the default if not
   // given on the command-line).
   llvm::TargetMachine &targetMachine = ci.getTargetMachine();
+  llvm::TargetOptions &tmOpts = targetMachine.Options;
+  llvm::MCTargetOptions &mcOpts = tmOpts.MCOptions;
 
-  targetMachine.Options.MCOptions.AsmVerbose = targetOpts.asmVerbose;
-  targetMachine.Options.MCOptions.SplitDwarfFile = codeGenOpts.SplitDwarfFile;
+  tmOpts.FunctionSections = codeGenOpts.FunctionSections;
+  mcOpts.AsmVerbose = targetOpts.asmVerbose;
+  mcOpts.SplitDwarfFile = codeGenOpts.SplitDwarfFile;
 
   const llvm::Triple &theTriple = targetMachine.getTargetTriple();
 

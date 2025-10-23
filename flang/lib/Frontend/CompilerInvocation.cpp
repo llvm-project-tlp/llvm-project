@@ -274,6 +274,10 @@ static void parseCodeGenArgs(Fortran::frontend::CodeGenOptions &opts,
                              clang::DiagnosticsEngine &diags) {
   opts.OptimizationLevel = getOptimizationLevel(args, diags);
 
+  if (args.hasFlag(clang::driver::options::OPT_ffunction_sections,
+                   clang::driver::options::OPT_fno_function_sections, false))
+    opts.FunctionSections = 1;
+
   if (args.hasFlag(clang::driver::options::OPT_fdebug_pass_manager,
                    clang::driver::options::OPT_fno_debug_pass_manager, false))
     opts.DebugPassManager = 1;
