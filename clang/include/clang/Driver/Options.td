@@ -4923,7 +4923,7 @@ def isysroot : JoinedOrSeparate<["-"], "isysroot">, Group<clang_i_Group>,
   HelpText<"Set the system root directory (usually /)">, MetaVarName<"<dir>">,
   MarshallingInfoString<HeaderSearchOpts<"Sysroot">, [{"/"}]>;
 def isystem : JoinedOrSeparate<["-"], "isystem">, Group<clang_i_Group>,
-  Visibility<[ClangOption, CC1Option]>,
+  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>,
   HelpText<"Add directory to SYSTEM include search path">, MetaVarName<"<directory>">;
 def isystem_after : JoinedOrSeparate<["-"], "isystem-after">,
   Group<clang_i_Group>, Flags<[NoXarchOption]>, MetaVarName<"<directory>">,

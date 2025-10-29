@@ -66,9 +66,9 @@ void Flang::addFortranDialectOptions(const ArgList &Args,
 
 void Flang::addPreprocessingOptions(const ArgList &Args,
                                     ArgStringList &CmdArgs) const {
-  Args.addAllArgs(CmdArgs,
-                  {options::OPT_P, options::OPT_D, options::OPT_U,
-                   options::OPT_I, options::OPT_cpp, options::OPT_nocpp});
+  Args.addAllArgs(CmdArgs, {options::OPT_P, options::OPT_D, options::OPT_U,
+                            options::OPT_I, options::OPT_cpp,
+                            options::OPT_nocpp, options::OPT_isystem});
 }
 
 /// @C shouldLoopVersion

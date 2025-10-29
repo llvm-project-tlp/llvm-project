@@ -33,6 +33,20 @@ enum class PPMacrosFlag : uint8_t {
   Exclude
 };
 
+/// Search directories may be specified using several different command line
+/// options. This groups the search directories by the option with which they
+/// were added.
+struct SearchDirectories {
+  /// Directories specified by the user with -I
+  std::vector<std::string> dirsFromDashI;
+
+  /// Directories specified by the user with -isystem
+  std::vector<std::string> dirsFromISystem;
+
+  /// Directories specified by the user with -fintrinsic-modules-path
+  std::vector<std::string> dirsFromIntrModPath;
+};
+
 /// This class is used for passing the various options used
 /// in preprocessor initialization to the parser options.
 struct PreprocessorOptions {
@@ -40,13 +54,7 @@ struct PreprocessorOptions {
 
   std::vector<std::pair<std::string, /*isUndef*/ bool>> macros;
 
-  // Search directories specified by the user with -I
-  // TODO: When adding support for more options related to search paths,
-  // consider collecting them in a separate aggregate. For now we keep it here
-  // as there is no point creating a class for just one field.
-  std::vector<std::string> searchDirectoriesFromDashI;
-  // Search directories specified by the user with -fintrinsic-modules-path
-  std::vector<std::string> searchDirectoriesFromIntrModPath;
+  SearchDirectories searchDirs;
 
   PPMacrosFlag macrosFlag = PPMacrosFlag::Unknown;
 

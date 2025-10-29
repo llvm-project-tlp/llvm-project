@@ -934,13 +934,17 @@ static void parsePreprocessorArgs(Fortran::frontend::PreprocessorOptions &opts,
 
   // Add the ordered list of -I's.
   for (const auto *currentArg : args.filtered(clang::driver::options::OPT_I))
-    opts.searchDirectoriesFromDashI.emplace_back(currentArg->getValue());
+    opts.searchDirs.dirsFromDashI.emplace_back(currentArg->getValue());
+
+  // Add the ordered list of -isystem's.
+  for (const auto *a : args.filtered(clang::driver::options::OPT_isystem))
+    opts.searchDirs.dirsFromISystem.emplace_back(a->getValue());
 
   // Prepend the ordered list of -intrinsic-modules-path
   // to the default location to search.
   for (const auto *currentArg :
        args.filtered(clang::driver::options::OPT_fintrinsic_modules_path))
-    opts.searchDirectoriesFromIntrModPath.emplace_back(currentArg->getValue());
+    opts.searchDirs.dirsFromIntrModPath.emplace_back(currentArg->getValue());
 
   // -cpp/-nocpp
   if (const auto *currentArg = args.getLastArg(
@@ -1845,14 +1849,20 @@ void CompilerInvocation::setFortranOpts() {
   // Adding search directories specified by -I
   fortranOptions.searchDirectories.insert(
       fortranOptions.searchDirectories.end(),
-      preprocessorOptions.searchDirectoriesFromDashI.begin(),
-      preprocessorOptions.searchDirectoriesFromDashI.end());
+      preprocessorOptions.searchDirs.dirsFromDashI.begin(),
+      preprocessorOptions.searchDirs.dirsFromDashI.end());
+
+  // Adding search directories specified by -isystem
+  fortranOptions.searchDirectories.insert(
+      fortranOptions.searchDirectories.end(),
+      preprocessorOptions.searchDirs.dirsFromISystem.begin(),
+      preprocessorOptions.searchDirs.dirsFromISystem.end());
 
   // Add the ordered list of -intrinsic-modules-path
   fortranOptions.searchDirectories.insert(
       fortranOptions.searchDirectories.end(),
-      preprocessorOptions.searchDirectoriesFromIntrModPath.begin(),
-      preprocessorOptions.searchDirectoriesFromIntrModPath.end());
+      preprocessorOptions.searchDirs.dirsFromIntrModPath.begin(),
+      preprocessorOptions.searchDirs.dirsFromIntrModPath.end());
 
   //  Add the default intrinsic module directory
   fortranOptions.intrinsicModuleDirectories.emplace_back(

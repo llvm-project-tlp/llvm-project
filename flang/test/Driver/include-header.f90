@@ -7,6 +7,13 @@
 ! RUN: %flang -E -I %S/Inputs %s  2>&1 | FileCheck %s --check-prefix=SINGLEINCLUDE
 ! RUN: %flang -E -I %S/Inputs -I %S/Inputs/header-dir %s  2>&1 | FileCheck %s --check-prefix=MAINDIRECTORY
 ! RUN: %flang -E -I %S/Inputs/header-dir -I %S/Inputs %s  2>&1 | FileCheck %s --check-prefix=SUBDIRECTORY
+!
+! RUN: %flang -E -isystem %S/Inputs %s 2>&1 \
+! RUN:     | FileCheck %s --check-prefix=SINGLEINCLUDE
+! RUN: %flang -E -isystem %S/Inputs -isystem %S/Inputs/header-dir %s 2>&1 \
+! RUN:     | FileCheck %s --check-prefix=MAINDIRECTORY
+! RUN: %flang -E -isystem %S/Inputs/header-dir -isystem %S/Inputs %s 2>&1 \
+! RUN:     | FileCheck %s --check-prefix=SUBDIRECTORY
 
 !----------------------------------------
 ! FRONTEND FLANG DRIVER (flang_fc1)
@@ -15,6 +22,13 @@
 ! RUN: %flang_fc1 -E -I %S/Inputs %s  2>&1 | FileCheck %s --check-prefix=SINGLEINCLUDE
 ! RUN: %flang_fc1 -E -I %S/Inputs -I %S/Inputs/header-dir %s  2>&1 | FileCheck %s --check-prefix=MAINDIRECTORY
 ! RUN: %flang_fc1 -E -I %S/Inputs/header-dir -I %S/Inputs %s  2>&1 | FileCheck %s --check-prefix=SUBDIRECTORY
+
+! RUN: %flang_fc1 -E -isystem %S/Inputs %s 2>&1 \
+! RUN:     | FileCheck %s --check-prefix=SINGLEINCLUDE
+! RUN: %flang_fc1 -E -isystem %S/Inputs -isystem %S/Inputs/header-dir %s 2>&1 \
+! RUN:     | FileCheck %s --check-prefix=MAINDIRECTORY
+! RUN: %flang_fc1 -E -isystem %S/Inputs/header-dir -isystem %S/Inputs %s 2>&1 \
+! RUN:     | FileCheck %s --check-prefix=SUBDIRECTORY
 
 ! UNINCLUDED:#include: Source file 'basic-header-one.h' was not found
 ! UNINCLUDED-NOT:program b
