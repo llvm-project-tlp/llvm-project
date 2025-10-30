@@ -175,6 +175,11 @@ public:
   /// Output filename for the split debug info, not used in the skeleton CU.
   std::string SplitDwarfOutput;
 
+  /// Enable debugging of the backend pass manager (the legacy pass manager).
+  /// Debugging is only enabled if the string is non-empty and one of
+  /// "Structure" or "Arguments".
+  std::string DebugPass;
+
   /// Check if Clang profile instrumenation is on.
   bool hasProfileClangInstr() const {
     return getProfileInstr() == llvm::driver::ProfileClangInstr;

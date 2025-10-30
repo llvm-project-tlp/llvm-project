@@ -2087,8 +2087,10 @@ defm cxx_modules : BoolFOption<"cxx-modules",
   PosFlag<SetTrue, [], [ClangOption], "Enable">,
   BothFlags<[], [], " modules for C++">>,
   ShouldParseIf<cplusplus.KeyPath>;
-def fdebug_pass_arguments : Flag<["-"], "fdebug-pass-arguments">, Group<f_Group>;
-def fdebug_pass_structure : Flag<["-"], "fdebug-pass-structure">, Group<f_Group>;
+def fdebug_pass_arguments : Flag<["-"], "fdebug-pass-arguments">,
+  Group<f_Group>, Visibility<[ClangOption, FlangOption]>;
+def fdebug_pass_structure : Flag<["-"], "fdebug-pass-structure">,
+  Group<f_Group>, Visibility<[ClangOption, FlangOption]>;
 def fdepfile_entry : Joined<["-"], "fdepfile-entry=">,
     Group<f_clang_Group>, Visibility<[ClangOption, CC1Option]>;
 def fdiagnostics_fixit_info : Flag<["-"], "fdiagnostics-fixit-info">, Group<f_clang_Group>;
@@ -7763,6 +7765,10 @@ def output_asm_variant : Joined<["--"], "output-asm-variant=">,
 } // let Visibility = [CC1Option, CC1AsOption]
 
 let Visibility = [CC1Option, FC1Option] in {
+def mdebug_pass : Separate<["-"], "mdebug-pass">,
+  HelpText<"Enable additional debug output">,
+  MarshallingInfoString<CodeGenOpts<"DebugPass">>;
+
 def mlink_builtin_bitcode : Separate<["-"], "mlink-builtin-bitcode">,
   HelpText<"Link and internalize needed symbols from the given bitcode file "
            "before performing optimizations.">;
@@ -7852,9 +7858,6 @@ def no_struct_path_tbaa : Flag<["-"], "no-struct-path-tbaa">,
   MarshallingInfoNegativeFlag<CodeGenOpts<"StructPathTBAA">>;
 def new_struct_path_tbaa : Flag<["-"], "new-struct-path-tbaa">,
   HelpText<"Enable enhanced struct-path aware Type Based Alias Analysis">;
-def mdebug_pass : Separate<["-"], "mdebug-pass">,
-  HelpText<"Enable additional debug output">,
-  MarshallingInfoString<CodeGenOpts<"DebugPass">>;
 def mabi_EQ_ieeelongdouble : Flag<["-"], "mabi=ieeelongdouble">,
   HelpText<"Use IEEE 754 quadruple-precision for long double">,
   MarshallingInfoFlag<LangOpts<"PPCIEEELongDouble">>;

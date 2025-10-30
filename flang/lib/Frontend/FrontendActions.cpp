@@ -872,6 +872,35 @@ getOutputStream(CompilerInstance &ci, llvm::StringRef inFile,
   llvm_unreachable("Invalid action!");
 }
 
+/// Some options can only be set in the legacy pass manager via command-line
+/// options. This function is a workaround to do just that by constructing a
+/// fake command line and parsing it. If the options are ever exposed via a
+/// different mechanism, or if we move away from the legacy pass manager
+/// altogether, this can be removed.
+///
+/// \param [in] codeGenOpts options configuring the codegen pipeline
+static void
+setLegacyPassManagerDebugOptions(const CodeGenOptions &codeGenOpts) {
+  llvm::SmallVector<const char *, 16> clOpts;
+  clOpts.push_back("flang"); // Fake program name.
+  if (!codeGenOpts.DebugPass.empty()) {
+    clOpts.push_back("-debug-pass");
+    clOpts.push_back(codeGenOpts.DebugPass.c_str());
+  }
+  // If no "command line options" need to be passed to the legacy pass manager
+  // (or the backend passes), don't do anything.
+  if (clOpts.size() == 1)
+    return;
+
+  clOpts.push_back(nullptr);
+  // FIXME: The command line parser below is not thread-safe and shares a global
+  // state, so this call might crash or overwrite the options of another Flang
+  // instance in the same process.
+  llvm::cl::ParseCommandLineOptions(clOpts.size() - 1, clOpts.data(),
+                                    /*Overview=*/"", /*Errs=*/nullptr,
+                                    /*VFS=*/nullptr);
+}
+
 /// Generate target-specific machine-code or assembly file from the input LLVM
 /// module.
 ///
@@ -890,6 +919,8 @@ static void generateMachineCodeOrAssemblyImpl(clang::DiagnosticsEngine &diags,
   assert(((act == BackendActionTy::Backend_EmitObj) ||
           (act == BackendActionTy::Backend_EmitAssembly)) &&
          "Unsupported action");
+
+  setLegacyPassManagerDebugOptions(codeGenOpts);
 
   // Set-up the pass manager, i.e create an LLVM code-gen pass pipeline.
   // Currently only the legacy pass manager is supported.

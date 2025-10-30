@@ -278,6 +278,10 @@ static void parseCodeGenArgs(Fortran::frontend::CodeGenOptions &opts,
                    clang::driver::options::OPT_fno_debug_pass_manager, false))
     opts.DebugPassManager = 1;
 
+  if (const llvm::opt::Arg *a =
+          args.getLastArg(clang::driver::options::OPT_mdebug_pass))
+    opts.DebugPass = a->getValue();
+
   if (args.hasFlag(clang::driver::options::OPT_fstack_arrays,
                    clang::driver::options::OPT_fno_stack_arrays, false))
     opts.StackArrays = 1;

@@ -1060,6 +1060,15 @@ void Flang::ConstructJob(Compilation &C, const JobAction &JA,
   // Forward -Xflang arguments to -fc1
   Args.AddAllArgValues(CmdArgs, options::OPT_Xflang);
 
+  if (Args.hasArg(options::OPT_fdebug_pass_arguments)) {
+    CmdArgs.push_back("-mdebug-pass");
+    CmdArgs.push_back("Arguments");
+  }
+  if (Args.hasArg(options::OPT_fdebug_pass_structure)) {
+    CmdArgs.push_back("-mdebug-pass");
+    CmdArgs.push_back("Structure");
+  }
+
   CodeGenOptions::FramePointerKind FPKeepKind =
       getFramePointerKind(Args, Triple);
 
