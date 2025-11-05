@@ -46,7 +46,7 @@ subroutine unroll
   do i=1,10
   enddo
   !dir$ nounroll
-  ! CHECK: !DIR$ NOUNROLL 
+  ! CHECK: !DIR$ NOUNROLL
   do i=1,10
   enddo
 end subroutine
@@ -61,7 +61,7 @@ subroutine unroll_and_jam
   do i=1,10
   enddo
   !dir$ nounroll_and_jam
-  ! CHECK: !DIR$ NOUNROLL_AND_JAM 
+  ! CHECK: !DIR$ NOUNROLL_AND_JAM
   do i=1,10
   enddo
 end subroutine
@@ -75,16 +75,16 @@ end subroutine
 
 subroutine inline
   integer :: a
-  !dir$ forceinline 
-  ! CHECK: !DIR$ FORCEINLINE 
+  !dir$ forceinline
+  ! CHECK: !DIR$ FORCEINLINE
   a = f(2)
 
-  !dir$ inline 
-  ! CHECK: !DIR$ INLINE 
+  !dir$ inline
+  ! CHECK: !DIR$ INLINE
   call g()
 
-  !dir$ noinline 
-  ! CHECK: !DIR$ NOINLINE 
+  !dir$ noinline
+  ! CHECK: !DIR$ NOINLINE
   call g()
 
   contains
