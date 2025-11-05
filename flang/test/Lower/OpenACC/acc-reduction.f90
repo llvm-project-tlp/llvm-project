@@ -8,7 +8,7 @@
 ! CHECK:   %[[DIMS0:.*]]:3 = fir.box_dims %[[ARG0]], %c0{{.*}} : (!fir.box<!fir.array<?x?xf32>>, index) -> (index, index, index)
 ! CHECK:   %[[DIMS1:.*]]:3 = fir.box_dims %[[ARG0]], %c1 : (!fir.box<!fir.array<?x?xf32>>, index) -> (index, index, index)
 ! CHECK:   %[[SHAPE:.*]] = fir.shape %[[DIMS0]]#1, %[[DIMS1]]#1 : (index, index) -> !fir.shape<2>
-! CHECK:   %[[TEMP:.*]] = fir.allocmem !fir.array<?x?xf32>, %[[DIMS0]]#1, %[[DIMS1]]#1 {bindc_name = ".tmp", uniq_name = ""} 
+! CHECK:   %[[TEMP:.*]] = fir.allocmem !fir.array<?x?xf32>, %[[DIMS0]]#1, %[[DIMS1]]#1 {bindc_name = ".tmp", uniq_name = ""}
 ! CHECK:   %[[DECL:.*]]:2 = hlfir.declare %[[TEMP]](%[[SHAPE]]) {uniq_name = ".tmp"} : (!fir.heap<!fir.array<?x?xf32>>, !fir.shape<2>) -> (!fir.box<!fir.array<?x?xf32>>, !fir.heap<!fir.array<?x?xf32>>)
 ! CHECK:   hlfir.assign %[[CST]] to %[[DECL]]#0 : f32, !fir.box<!fir.array<?x?xf32>>
 ! CHECK:   acc.yield %[[DECL]]#0 : !fir.box<!fir.array<?x?xf32>>
