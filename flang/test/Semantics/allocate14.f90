@@ -2,7 +2,7 @@
 ! Check for semantic errors in ALLOCATE statements
 
 program allocate14
-  
+
   integer, allocatable :: i1, i2
   character(200), allocatable :: msg1, msg2
   type t
