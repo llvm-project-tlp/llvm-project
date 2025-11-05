@@ -1,19 +1,19 @@
 ! RUN: bbc -emit-hlfir -fopenmp -fopenmp-version=50 -o - %s 2>&1 | FileCheck %s
 ! RUN: %flang_fc1 -emit-hlfir -fopenmp -fopenmp-version=50 -o - %s 2>&1 | FileCheck %s
 
-! CHECK-LABEL:  omp.private 
+! CHECK-LABEL:  omp.private
 ! CHECK-SAME:       {type = private} @[[I_PRIVATE_TEST2:.*]] : i32
 
-! CHECK-LABEL:  omp.private 
+! CHECK-LABEL:  omp.private
 ! CHECK-SAME:       {type = private} @[[RES_PRIVATE_TEST2:.*]] : i32
 
-! CHECK-LABEL:  omp.private 
+! CHECK-LABEL:  omp.private
 ! CHECK-SAME:       {type = private} @[[I_PRIVATE:.*]] : i32
 
-! CHECK-LABEL:  omp.private 
-! CHECK-SAME:        {type = firstprivate} @[[RES_FIRSTPRIVATE:.*]] : i32 
+! CHECK-LABEL:  omp.private
+! CHECK-SAME:        {type = firstprivate} @[[RES_FIRSTPRIVATE:.*]] : i32
 ! CHECK-SAME:   copy {
-! CHECK:         hlfir.assign 
+! CHECK:         hlfir.assign
 
 ! CHECK-LABEL:  func.func @_QPomp_taskloop
 ! CHECK:          %[[ALLOCA_I:.*]] = fir.alloca i32 {bindc_name = "i", uniq_name = "_QFomp_taskloopEi"}
