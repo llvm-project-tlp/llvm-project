@@ -1285,17 +1285,22 @@ def no_cuda_include_ptx_EQ : Joined<["--"], "no-cuda-include-ptx=">,
   Flags<[NoXarchOption]>,
   HelpText<"Do not include PTX for the following GPU architecture (e.g. sm_35) or 'all'. May be specified more than once.">;
 def cuda_gpu_arch_EQ : Joined<["--"], "cuda-gpu-arch=">, Flags<[NoXarchOption]>,
-  Alias<offload_arch_EQ>;
+  Alias<offload_arch_EQ>,
+  Visibility<[ClangOption, FlangOption]>;
 def cuda_feature_EQ : Joined<["--"], "cuda-feature=">, HelpText<"Manually specify the CUDA feature to use">;
 def no_cuda_gpu_arch_EQ : Joined<["--"], "no-cuda-gpu-arch=">,
   Flags<[NoXarchOption]>,
-  Alias<no_offload_arch_EQ>;
+  Alias<no_offload_arch_EQ>,
+  Visibility<[ClangOption, FlangOption]>;
 
 def cuda_device_only : Flag<["--"], "cuda-device-only">, Alias<offload_device_only>,
+  Visibility<[ClangOption, FlangOption]>,
   HelpText<"Compile CUDA code for device only">;
 def cuda_host_only : Flag<["--"], "cuda-host-only">, Alias<offload_host_only>,
+  Visibility<[ClangOption, FlangOption]>,
   HelpText<"Compile CUDA code for host only. Has no effect on non-CUDA compilations.">;
 def cuda_compile_host_device : Flag<["--"], "cuda-compile-host-device">, Alias<offload_host_device>,
+  Visibility<[ClangOption, FlangOption]>,
   HelpText<"Compile CUDA code for both host and device (default). Has no "
            "effect on non-CUDA compilations.">;
 
@@ -1659,6 +1664,7 @@ defm auto_import : BoolFOption<"auto-import",
 // languages and accept other values such as CPU/GPU architectures,
 // offload kinds and target aliases.
 def offload_EQ : CommaJoined<["--"], "offload=">, Flags<[NoXarchOption]>, Alias<offload_targets_EQ>,
+  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>,
   HelpText<"Specify comma-separated list of offloading target triples (CUDA and HIP only)">;
 
 // This flag is only here so we can test the named loops implementation
@@ -6252,10 +6258,12 @@ def fno_rtlib_defaultlib : Flag<["-"], "fno-rtlib-defaultlib">,
                       HelpText<"On Windows, do not emit /defaultlib: directives to link compiler-rt libraries">;
 def offload_add_rpath: Flag<["--"], "offload-add-rpath">,
   Flags<[NoArgumentUnused]>,
-  Alias<frtlib_add_rpath>;
+  Alias<frtlib_add_rpath>,
+  Visibility<[ClangOption, FlangOption]>;
 def no_offload_add_rpath: Flag<["--"], "no-offload-add-rpath">,
   Flags<[NoArgumentUnused]>,
-  Alias<frtlib_add_rpath>;
+  Alias<frtlib_add_rpath>,
+  Visibility<[ClangOption, FlangOption]>;
 def r : Flag<["-"], "r">, Flags<[LinkerInput, NoArgumentUnused]>,
         Group<Link_Group>;
 def regcall4 : Flag<["-"], "regcall4">, Group<m_Group>,
@@ -6516,9 +6524,12 @@ def _encoding : Separate<["--"], "encoding">, Alias<fencoding_EQ>;
 def _entry : Flag<["--"], "entry">, Alias<e>;
 def _extdirs_EQ : Joined<["--"], "extdirs=">, Alias<fextdirs_EQ>;
 def _extdirs : Separate<["--"], "extdirs">, Alias<fextdirs_EQ>;
-def _extra_warnings : Flag<["--"], "extra-warnings">, Alias<W_Joined>;
-def _for_linker_EQ : Joined<["--"], "for-linker=">, Alias<Xlinker>;
-def _for_linker : Separate<["--"], "for-linker">, Alias<Xlinker>;
+def _extra_warnings : Flag<["--"], "extra-warnings">, Alias<W_Joined>,
+  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>;
+def _for_linker_EQ : Joined<["--"], "for-linker=">, Alias<Xlinker>,
+  Visibility<[ClangOption, CLOption, FlangOption]>;
+def _for_linker : Separate<["--"], "for-linker">, Alias<Xlinker>,
+  Visibility<[ClangOption, CLOption, FlangOption]>;
 def _force_link_EQ : Joined<["--"], "force-link=">, Alias<u>;
 def _force_link : Separate<["--"], "force-link">, Alias<u>;
 def _imacros_EQ : Joined<["--"], "imacros=">, Alias<imacros>;
@@ -6539,11 +6550,13 @@ def _include_with_prefix_EQ : Joined<["--"], "include-with-prefix=">, Alias<iwit
 def _include_with_prefix : Separate<["--"], "include-with-prefix">, Alias<iwithprefix>;
 def _include_EQ : Joined<["--"], "include=">, Alias<include_>;
 def _language_EQ : Joined<["--"], "language=">, Alias<x>,
-    Visibility<[ClangOption, CC1Option, FlangOption, FC1Option, CLOption]>;
+  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option, CLOption]>;
 def _language : Separate<["--"], "language">, Alias<x>,
-    Visibility<[ClangOption, CC1Option, FlangOption, FC1Option, CLOption]>;
-def _library_directory_EQ : Joined<["--"], "library-directory=">, Alias<L>;
-def _library_directory : Separate<["--"], "library-directory">, Alias<L>;
+  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option, CLOption]>;
+def _library_directory_EQ : Joined<["--"], "library-directory=">, Alias<L>,
+  Visibility<[ClangOption, FlangOption]>;
+def _library_directory : Separate<["--"], "library-directory">, Alias<L>,
+  Visibility<[ClangOption, FlangOption]>;
 def _no_line_commands : Flag<["--"], "no-line-commands">, Alias<P>;
 def _no_standard_includes : Flag<["--"], "no-standard-includes">, Alias<nostdinc>;
 def _no_standard_libraries : Flag<["--"], "no-standard-libraries">, Alias<nostdlib>,
@@ -6578,7 +6591,8 @@ def _print_prog_name : Separate<["--"], "print-prog-name">, Alias<print_prog_nam
 def _profile : Flag<["--"], "profile">, Alias<p>;
 def _resource_EQ : Joined<["--"], "resource=">, Alias<fcompile_resource_EQ>;
 def _resource : Separate<["--"], "resource">, Alias<fcompile_resource_EQ>;
-def _rtlib : Separate<["--"], "rtlib">, Alias<rtlib_EQ>;
+def _rtlib : Separate<["--"], "rtlib">, Alias<rtlib_EQ>,
+  Visibility<[ClangOption, CLOption, FlangOption]>;
 def _serialize_diags : Separate<["-", "--"], "serialize-diagnostics">,
   Flags<[NoXarchOption]>,
   HelpText<"Serialize compiler diagnostics to a file">;

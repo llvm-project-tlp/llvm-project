@@ -28,6 +28,24 @@
 ! OFFLOAD-HOST-AND-DEVICE: "{{[^"]*}}flang" "-fc1" "-triple" "aarch64-unknown-linux-gnu"
 
 ! RUN: %flang -S -### %s -o %t 2>&1 \
+! RUN: -fopenmp --cuda-gpu-arch=sm_70 \
+! RUN: --target=x86_64-pc-linux-gnu -nogpulib \
+! RUN:   | FileCheck %s --check-prefix=CUDA-GPU-ARCH
+
+! CUDA-GPU-ARCH: "{{[^"]*}}flang" "-fc1" "-triple" "x86_64-pc-linux-gnu"
+! CUDA-GPU-ARCH-NEXT: "{{[^"]*}}flang" "-fc1" "-triple" "nvptx64-nvidia-cuda"
+! CUDA-GPU-ARCH-NEXT: "{{[^"]*}}flang" "-fc1" "-triple" "x86_64-pc-linux-gnu"
+
+! RUN: %flang -S -### %s -o %t 2>&1 \
+! RUN: -fopenmp --cuda-gpu-arch=sm_70 --cuda-compile-host-device \
+! RUN: --target=x86_64-pc-linux-gnu -nogpulib\
+! RUN:   | FileCheck %s --check-prefix=CUDA-HOST-DEVICE
+
+! CUDA-HOST-DEVICE: "{{[^"]*}}flang" "-fc1" "-triple" "x86_64-pc-linux-gnu"
+! CUDA-HOST-DEVICE-NEXT: "{{[^"]*}}flang" "-fc1" "-triple" "nvptx64-nvidia-cuda"
+! CUDA-HOST-DEVICE: "{{[^"]*}}flang" "-fc1" "-triple" "x86_64-pc-linux-gnu"
+
+! RUN: %flang -S -### %s -o %t 2>&1 \
 ! RUN: -fopenmp --offload-arch=gfx90a --offload-arch=sm_70 --offload-host-only \
 ! RUN: --target=aarch64-unknown-linux-gnu -nogpulib\
 ! RUN:   | FileCheck %s --check-prefix=OFFLOAD-HOST
@@ -36,6 +54,15 @@
 ! OFFLOAD-HOST-NOT: "-triple" "amdgcn-amd-amdhsa"
 ! OFFLOAD-HOST-NOT: "-triple" "nvptx64-nvidia-cuda"
 ! OFFLOAD-HOST-NOT: "{{[^"]*}}flang" "-fc1" "-triple" "aarch64-unknown-linux-gnu"
+
+! RUN: %flang -S -### %s -o %t 2>&1 \
+! RUN: -fopenmp --cuda-gpu-arch=sm_70 --cuda-host-only \
+! RUN: --target=x86_64-pc-linux-gnu -nogpulib \
+! RUN:   | FileCheck %s --check-prefix=CUDA-HOST
+
+! CUDA-HOST: "{{[^"]*}}flang" "-fc1" "-triple" "x86_64-pc-linux-gnu"
+! CUDA-HOST-NOT: "-triple" "nvptx64-nvidia-cuda"
+! CUDA-HOST-NOT: "{{[^"]*}}flang" "-fc1" "-triple" "x86_64-pc-linux-gnu"
 
 ! RUN: %flang -S -### %s 2>&1 \
 ! RUN: -fopenmp --offload-arch=gfx90a --offload-arch=sm_70 --offload-device-only \
@@ -46,6 +73,15 @@
 ! OFFLOAD-DEVICE-NEXT: "{{[^"]*}}flang" "-fc1" "-triple" "amdgcn-amd-amdhsa"
 ! OFFLOAD-DEVICE-NEXT: "{{[^"]*}}flang" "-fc1" "-triple" "nvptx64-nvidia-cuda"
 ! OFFLOAD-DEVICE-NOT: "{{[^"]*}}flang" "-fc1" "-triple" "aarch64-unknown-linux-gnu"
+
+! RUN: %flang -S -### %s 2>&1 \
+! RUN: -fopenmp --cuda-gpu-arch=sm_70 --cuda-device-only \
+! RUN: --target=x86_64-pc-linux-gnu -nogpulib\
+! RUN:   | FileCheck %s --check-prefix=CUDA-DEVICE
+
+! CUDA-DEVICE: "{{[^"]*}}flang" "-fc1" "-triple" "x86_64-pc-linux-gnu"
+! CUDA-DEVICE-NEXT: "{{[^"]*}}flang" "-fc1" "-triple" "nvptx64-nvidia-cuda"
+! CUDA-DEVICE-NOT: "{{[^"]*}}flang" "-fc1" "-triple" "x86_64-pc-linux-gnu"
 
 ! Test regular -fopenmp with offload for basic fopenmp-is-target-device flag addition and correct fopenmp
 ! RUN: %flang -### -fopenmp --offload-arch=gfx90a -fopenmp-targets=amdgcn-amd-amdhsa -nogpulib %s 2>&1 | FileCheck --check-prefixes=CHECK-OPENMP-IS-TARGET-DEVICE %s
