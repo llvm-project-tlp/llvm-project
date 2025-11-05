@@ -485,7 +485,7 @@
     call scharacter1('00 ')   ! expected output:  0
     call scharacter1('.  ')   ! expected output:  0
     call scharacter1('   ')   ! expected output:  0
- 
+
     print*
     call scharacter2('99 ')   ! expected output:  9 -2
     call scharacter2('22 ')   ! expected output:  9 -2
@@ -499,7 +499,7 @@
     call sempty(3)            ! expected output: 3 i:case default; 3 c:case default
 
     print*
-    call sgoto                ! expected output:  10 20 300 400 5000 6000 70000 80000 
+    call sgoto                ! expected output:  10 20 300 400 5000 6000 70000 80000
 
     print*
     call swhere(1)            ! expected output: 42.
