@@ -936,6 +936,14 @@ static void generateMachineCodeOrAssemblyImpl(clang::DiagnosticsEngine &diags,
   delete tlii;
 }
 
+/// Check whether we should emit a module summary for LTO. A summary should be
+/// emitted by default except for ld64 targets.
+static bool shouldEmitLTOSummary(const CodeGenOptions &opts,
+                                 llvm::Triple triple) {
+  return opts.PrepareForFullLTO && !opts.DisableLLVMPasses &&
+         (triple.getVendor() != llvm::Triple::Apple);
+}
+
 void CodeGenAction::runOptimizationPipeline(llvm::raw_pwrite_stream &os) {
   CompilerInstance &ci = getInstance();
   const CodeGenOptions &opts = ci.getInvocation().getCodeGenOpts();
@@ -1019,19 +1027,18 @@ void CodeGenAction::runOptimizationPipeline(llvm::raw_pwrite_stream &os) {
 
   // Create the pass manager.
   llvm::ModulePassManager mpm;
-  // The module summary should be emitted by default for regular LTO
-  // except for ld64 targets.
-  bool emitSummary =
-      opts.PrepareForFullLTO && (triple.getVendor() != llvm::Triple::Apple);
-  if (opts.PrepareForFatLTO)
-    mpm = pb.buildFatLTODefaultPipeline(level, opts.PrepareForThinLTO,
-                                        emitSummary);
-  else if (opts.PrepareForFullLTO)
-    mpm = pb.buildLTOPreLinkDefaultPipeline(level);
-  else if (opts.PrepareForThinLTO)
-    mpm = pb.buildThinLTOPreLinkDefaultPipeline(level);
-  else
-    mpm = pb.buildPerModuleDefaultPipeline(level);
+  bool emitSummary = shouldEmitLTOSummary(opts, triple);
+  if (!opts.DisableLLVMPasses) {
+    if (opts.PrepareForFatLTO)
+      mpm = pb.buildFatLTODefaultPipeline(level, opts.PrepareForThinLTO,
+                                          emitSummary);
+    else if (opts.PrepareForFullLTO)
+      mpm = pb.buildLTOPreLinkDefaultPipeline(level);
+    else if (opts.PrepareForThinLTO)
+      mpm = pb.buildThinLTOPreLinkDefaultPipeline(level);
+    else
+      mpm = pb.buildPerModuleDefaultPipeline(level);
+  }
 
   if (action == BackendActionTy::Backend_EmitBC ||
       action == BackendActionTy::Backend_EmitLL || opts.PrepareForFatLTO) {

@@ -274,6 +274,9 @@ static void parseCodeGenArgs(Fortran::frontend::CodeGenOptions &opts,
                              clang::DiagnosticsEngine &diags) {
   opts.OptimizationLevel = getOptimizationLevel(args, diags);
 
+  if (args.getLastArg(clang::driver::options::OPT_disable_llvm_passes))
+    opts.DisableLLVMPasses = 1;
+
   if (args.hasFlag(clang::driver::options::OPT_fdebug_pass_manager,
                    clang::driver::options::OPT_fno_debug_pass_manager, false))
     opts.DebugPassManager = 1;

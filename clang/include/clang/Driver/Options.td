@@ -7766,6 +7766,13 @@ def output_asm_variant : Joined<["--"], "output-asm-variant=">,
 } // let Visibility = [CC1Option, CC1AsOption]
 
 let Visibility = [CC1Option, FC1Option] in {
+def disable_llvm_passes : Flag<["-"], "disable-llvm-passes">,
+  HelpText<"Use together with -emit-llvm to get pristine LLVM IR from the "
+           "frontend by not running any LLVM passes at all">,
+  MarshallingInfoFlag<CodeGenOpts<"DisableLLVMPasses">>;
+def disable_llvm_optzns : Flag<["-"], "disable-llvm-optzns">,
+  Alias<disable_llvm_passes>;
+
 def mlink_builtin_bitcode : Separate<["-"], "mlink-builtin-bitcode">,
   HelpText<"Link and internalize needed symbols from the given bitcode file "
            "before performing optimizations.">;
@@ -7789,12 +7796,6 @@ def llvm_verify_each : Flag<["-"], "llvm-verify-each">,
 def disable_llvm_verifier : Flag<["-"], "disable-llvm-verifier">,
   HelpText<"Don't run the LLVM IR verifier pass">,
   MarshallingInfoNegativeFlag<CodeGenOpts<"VerifyModule">>;
-def disable_llvm_passes : Flag<["-"], "disable-llvm-passes">,
-  HelpText<"Use together with -emit-llvm to get pristine LLVM IR from the "
-           "frontend by not running any LLVM passes at all">,
-  MarshallingInfoFlag<CodeGenOpts<"DisableLLVMPasses">>;
-def disable_llvm_optzns : Flag<["-"], "disable-llvm-optzns">,
-  Alias<disable_llvm_passes>;
 def disable_lifetimemarkers : Flag<["-"], "disable-lifetime-markers">,
   HelpText<"Disable lifetime-markers emission even when optimizations are "
            "enabled">,

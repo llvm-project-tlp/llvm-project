@@ -24,6 +24,8 @@ CODEGENOPT(OptimizationLevel, 2, 0) ///< The -O[0-3] option specified.
 CODEGENOPT(DebugPassManager, 1, 0) ///< Prints debug information for the new
                                    ///< pass manager.
 
+/// Don't run any LLVM IR passes on the IR generated from MLIR
+CODEGENOPT(DisableLLVMPasses, 1, 0)
 
 /// Choose profile instrumenation kind or no instrumentation.
 ENUM_CODEGENOPT(ProfileInstr, llvm::driver::ProfileInstrKind, 2, llvm::driver::ProfileInstrKind::ProfileNone)
