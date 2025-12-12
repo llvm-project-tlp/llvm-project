@@ -44,16 +44,15 @@ LLVM project, and located in the LLVM monorepo ([github.com/llvm/llvm-project](h
   * **Classic Flang:** [https://github.com/flang-compiler/flang](https://github.com/flang-compiler/flang) 
 
 * **Issues:**  
-  * Issues for LLVM Flang should be reported in GitHub: [https://github.com/llvm/llvm-project/issues](https://github.com/llvm/llvm-project/issues). Us
-e the "flang" tag for flang-related issues, please  
-  * Issues for Classic Flang should be reported to the GitHub issues section at either [https://github.com/flang-compiler/flang/issues](https://github
-.com/flang-compiler/flang/issues) or [flang-compiler/flang-driver](https://github.com/flang-compiler/flang-driver) as appropriate
+  * Issues for LLVM Flang should be reported in GitHub: [https://github.com/llvm/llvm-project/issues](https://github.com/llvm/llvm-project/issues).
+  Use the "flang" tag for flang-related issues, please  
+  * Issues for Classic Flang should be reported to the GitHub issues section at either [https://github.com/flang-compiler/flang/issues](https://github.com/flang-compiler/flang/issues)
+  or [flang-compiler/flang-driver](https://github.com/flang-compiler/flang-driver) as appropriate
 
 * **LLVM mailing lists and Discourse channels:** There are now two mailing 
 lists hosted by llvm.org:  
   * The Flang Discourse channel: [https://discourse.llvm.org/c/subprojects/flang/33](https://discourse.llvm.org/c/subprojects/flang/33)   
-  * The flang-commits mailing list: subscribe at [https://lists.llvm.org/cgi-bin/mailman/listinfo/flang-commits](https://lists.llvm.org/cgi-bin/mailma
-n/listinfo/flang-commits) 
+  * The flang-commits mailing list: subscribe at [https://lists.llvm.org/cgi-bin/mailman/listinfo/flang-commits](https://lists.llvm.org/cgi-bin/mailman/listinfo/flang-commits) 
 
 * **Slack:** The [flang-compiler.slack.com](http://flang-compiler.slack.com)
 workspace is used for informal real-time communication in the Flang community.  
@@ -133,7 +132,6 @@ pull requests
     * [FOSDEM 2025 \- O\_o \[ Flang \+ WASM \] o\_O](https://archive.fosdem.org/2025/schedule/event/fosdem-2025-5202-oo-flang-wasm-oo/)   
   * Given the issues with the Call Notes document, this may be a good time
   to migrate to a Markdown document located in the repo  
-  * 
 
 ## Details
 
