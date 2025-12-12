@@ -7,19 +7,19 @@
 -->
 # Combined Flang Community Call Notes
 
-# About these notes
+## About these notes
 
 This document now combines the notes from the LLVM Flang Technical Calls an
 d the LLVM Flang Community Calls. This was done to make the Community Call 
 notes more publicly available than we could make them previously.
 
-# Helpful definitions
+## Helpful definitions
 
 - "LLVM Flang" is the Fortran 2018 compiler being developed as part of the 
 LLVM project, and located in the LLVM monorepo ([github.com/llvm/llvm-project](http://github.com/llvm/llvm-project)).  
 - "Classic Flang" is the Flang Fortran 2003/2008 compiler located at [github.com/flang-compiler/flang](http://github.com/flang-compiler/flang).
 
-# Call Information
+## Call Information
 
 * 8:30 am PT alternating Wednesdays  
 * Join from the meeting link  
@@ -37,7 +37,7 @@ LLVM project, and located in the LLVM monorepo ([github.com/llvm/llvm-project](h
 )  
   * You can also dial 173.243.2.68 and enter your meeting number
 
-# Flang Community
+## Flang Community
 
 * **Websites:**  
   * **LLVM Flang:** [https://flang.llvm.org](https://flang.llvm.org)   
@@ -71,11 +71,11 @@ workspace is used for informal real-time communication in the Flang community.
 pull requests  
   * Current status of Fortran 2008 features can be found at [https://github.com/flang-compiler/flang/wiki/Fortran-2008](https://github.com/flang-compiler/flang/wiki/Fortran-2008). 
 
-#### NOTES
+## NOTES
 
-# Combined Call 2025-12-03
+### Combined Call 2025-12-03
 
-## Agenda
+#### Agenda
 
 * Design docs and/or RFCs  
   * [\[RFC\] How to inform users why an executable stack is required](https://discourse.llvm.org/t/rfc-how-to-inform-users-why-an-executable-stack-is-required/89007)  
@@ -133,7 +133,7 @@ pull requests
   * Given the issues with the Call Notes document, this may be a good time
   to migrate to a Markdown document located in the repo  
 
-## Details
+#### Details
 
 * Consists of over **704,000** lines of code, documentation, build files,
 and test  
