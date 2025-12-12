@@ -51,10 +51,10 @@ Contributions to Flang are done using GitHub Pull Requests and follow the
 -   Technical discussions as well as general updates on the Flang project.
 -   Join the [Flang Biweekly Call](https://lanl-us.webex.com/lanl-us/j.php?MTID=mdce13c9bd55202e8071d8128fb953614)
     - If you prefer to join using a meeting number and password, those can be
-      found in this [Google Doc](https://docs.google.com/document/d/1Z2U5UAtJ-Dag5wlMaLaW1KRmNgENNAYynJqLW2j2AZQ/). Alternative methods of joining, such as call-in numbers, are also available there.
+      found in CombinedFlangCommunityCallNotes.md. Alternative methods of joining, such as call-in numbers, are also available there.
 -   Time: Every other Wednesday, 8:30 a.m. Pacific Time
 -   Calendar invite: https://drive.google.com/file/d/1rkfWCtIvQFcxN0Uz8YVwQGoX_BbzT8oc/view?usp=drive_link
--   Meeting minutes are available in this [Google Doc](https://docs.google.com/document/d/1Z2U5UAtJ-Dag5wlMaLaW1KRmNgENNAYynJqLW2j2AZQ/edit).
+-   Meeting minutes are available in CombinedFlangCommunityCallNotes.md .
 -   Minutes from older meetings were posted on the [Flang forum](https://discourse.llvm.org/c/subprojects/flang). Search for `Flang Biweekly Sync - Notes`.
 
 ### LLVM Alias Analysis Technical Call
