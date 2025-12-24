@@ -4466,8 +4466,7 @@ def fno_var_tracking : Flag<["-"], "fno-var-tracking">, Group<clang_ignored_f_Gr
 def fverbose_asm : Flag<["-"], "fverbose-asm">, Group<f_Group>,
   HelpText<"Generate verbose assembly output">,
   Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>;
-def dA : Flag<["-"], "dA">, Alias<fverbose_asm>.
-  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>;
+def dA : Flag<["-"], "dA">, Alias<fverbose_asm>;
 defm visibility_from_dllstorageclass : BoolFOption<"visibility-from-dllstorageclass",
   LangOpts<"VisibilityFromDLLStorageClass">, DefaultFalse,
   PosFlag<SetTrue, [], [ClangOption, CC1Option],
@@ -4797,8 +4796,7 @@ def gline_tables_only : Flag<["-"], "gline-tables-only">, Group<gN_Group>,
 def gline_directives_only : Flag<["-"], "gline-directives-only">, Group<gN_Group>,
   Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
   HelpText<"Emit debug line info directives only">;
-def gmlt : Flag<["-"], "gmlt">, Alias<gline_tables_only>,
-  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>;
+def gmlt : Flag<["-"], "gmlt">, Alias<gline_tables_only>;
 def g0 : Flag<["-"], "g0">, Group<gN_Group>, Visibility<[ClangOption, FlangOption]>;
 def g1 : Flag<["-"], "g1">, Group<gN_Group>, Visibility<[ClangOption, FlangOption]>, Alias<gline_tables_only>;
 def g2 : Flag<["-"], "g2">, Group<gN_Group>, Visibility<[ClangOption, FlangOption]>;
@@ -6495,8 +6493,7 @@ def _analyzer_output : JoinedOrSeparate<["--"], "analyzer-output">,
 def _analyze : Flag<["--"], "analyze">, Flags<[NoXarchOption]>,
   Visibility<[ClangOption, CLOption]>,
   HelpText<"Run the static analyzer">;
-def _assemble : Flag<["--"], "assemble">, Alias<S>,
-  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>;
+def _assemble : Flag<["--"], "assemble">, Alias<S>;
 def _assert_EQ : Joined<["--"], "assert=">, Alias<A>;
 def _assert : Separate<["--"], "assert">, Alias<A>;
 def _bootclasspath_EQ : Joined<["--"], "bootclasspath=">, Alias<fbootclasspath_EQ>;
@@ -6505,17 +6502,12 @@ def _classpath_EQ : Joined<["--"], "classpath=">, Alias<fclasspath_EQ>;
 def _classpath : Separate<["--"], "classpath">, Alias<fclasspath_EQ>;
 def _comments_in_macros : Flag<["--"], "comments-in-macros">, Alias<CC>;
 def _comments : Flag<["--"], "comments">, Alias<C>;
-def _compile : Flag<["--"], "compile">, Alias<c>,
-  Visibility<[ClangOption, FlangOption]>;
+def _compile : Flag<["--"], "compile">, Alias<c>;
 def _constant_cfstrings : Flag<["--"], "constant-cfstrings">;
-def _debug_EQ : Joined<["--"], "debug=">, Alias<g_Flag>,
-  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>;
-def _debug : Flag<["--"], "debug">, Alias<g_Flag>,
-  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>;
-def _define_macro_EQ : Joined<["--"], "define-macro=">, Alias<D>,
-  Visibility<[ClangOption, CC1Option, DXCOption, FlangOption, FC1Option]>;;
-def _define_macro : Separate<["--"], "define-macro">, Alias<D>,
-  Visibility<[ClangOption, CC1Option, DXCOption, FlangOption, FC1Option]>;;
+def _debug_EQ : Joined<["--"], "debug=">, Alias<g_Flag>;
+def _debug : Flag<["--"], "debug">, Alias<g_Flag>;
+def _define_macro_EQ : Joined<["--"], "define-macro=">, Alias<D>;
+def _define_macro : Separate<["--"], "define-macro">, Alias<D>;
 def _dependencies : Flag<["--"], "dependencies">, Alias<M>;
 def _dyld_prefix_EQ : Joined<["--"], "dyld-prefix=">;
 def _dyld_prefix : Separate<["--"], "dyld-prefix">, Alias<_dyld_prefix_EQ>;
@@ -6524,22 +6516,17 @@ def _encoding : Separate<["--"], "encoding">, Alias<fencoding_EQ>;
 def _entry : Flag<["--"], "entry">, Alias<e>;
 def _extdirs_EQ : Joined<["--"], "extdirs=">, Alias<fextdirs_EQ>;
 def _extdirs : Separate<["--"], "extdirs">, Alias<fextdirs_EQ>;
-def _extra_warnings : Flag<["--"], "extra-warnings">, Alias<W_Joined>,
-  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>;
-def _for_linker_EQ : Joined<["--"], "for-linker=">, Alias<Xlinker>,
-  Visibility<[ClangOption, CLOption, FlangOption]>;
-def _for_linker : Separate<["--"], "for-linker">, Alias<Xlinker>,
-  Visibility<[ClangOption, CLOption, FlangOption]>;
+def _extra_warnings : Flag<["--"], "extra-warnings">, Alias<W_Joined>;
+def _for_linker_EQ : Joined<["--"], "for-linker=">, Alias<Xlinker>;
+def _for_linker : Separate<["--"], "for-linker">, Alias<Xlinker>;
 def _force_link_EQ : Joined<["--"], "force-link=">, Alias<u>;
 def _force_link : Separate<["--"], "force-link">, Alias<u>;
 def _imacros_EQ : Joined<["--"], "imacros=">, Alias<imacros>;
 def _include_barrier : Flag<["--"], "include-barrier">, Alias<I_>;
 def _include_directory_after_EQ : Joined<["--"], "include-directory-after=">, Alias<idirafter>;
 def _include_directory_after : Separate<["--"], "include-directory-after">, Alias<idirafter>;
-def _include_directory_EQ : Joined<["--"], "include-directory=">, Alias<I>,
-  Visibility<[ClangOption, CC1Option, CC1AsOption, FlangOption, FC1Option]>;
-def _include_directory : Separate<["--"], "include-directory">, Alias<I>,
-  Visibility<[ClangOption, CC1Option, CC1AsOption, FlangOption, FC1Option]>;
+def _include_directory_EQ : Joined<["--"], "include-directory=">, Alias<I>;
+def _include_directory : Separate<["--"], "include-directory">, Alias<I>;
 def _include_prefix_EQ : Joined<["--"], "include-prefix=">, Alias<iprefix>;
 def _include_prefix : Separate<["--"], "include-prefix">, Alias<iprefix>;
 def _include_with_prefix_after_EQ : Joined<["--"], "include-with-prefix-after=">, Alias<iwithprefix>;
@@ -6549,32 +6536,23 @@ def _include_with_prefix_before : Separate<["--"], "include-with-prefix-before">
 def _include_with_prefix_EQ : Joined<["--"], "include-with-prefix=">, Alias<iwithprefix>;
 def _include_with_prefix : Separate<["--"], "include-with-prefix">, Alias<iwithprefix>;
 def _include_EQ : Joined<["--"], "include=">, Alias<include_>;
-def _language_EQ : Joined<["--"], "language=">, Alias<x>,
-  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option, CLOption]>;
-def _language : Separate<["--"], "language">, Alias<x>,
-  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option, CLOption]>;
-def _library_directory_EQ : Joined<["--"], "library-directory=">, Alias<L>,
-  Visibility<[ClangOption, FlangOption]>;
-def _library_directory : Separate<["--"], "library-directory">, Alias<L>,
-  Visibility<[ClangOption, FlangOption]>;
+def _language_EQ : Joined<["--"], "language=">, Alias<x>;
+def _language : Separate<["--"], "language">, Alias<x>;
+def _library_directory_EQ : Joined<["--"], "library-directory=">, Alias<L>;
+def _library_directory : Separate<["--"], "library-directory">, Alias<L>;
 def _no_line_commands : Flag<["--"], "no-line-commands">, Alias<P>;
 def _no_standard_includes : Flag<["--"], "no-standard-includes">, Alias<nostdinc>;
-def _no_standard_libraries : Flag<["--"], "no-standard-libraries">, Alias<nostdlib>,
-  Visibility<[ClangOption, FlangOption]>;
+def _no_standard_libraries : Flag<["--"], "no-standard-libraries">, Alias<nostdlib>;
 def _no_undefined : Flag<["--"], "no-undefined">, Flags<[LinkerInput]>;
 def _no_warnings : Flag<["--"], "no-warnings">,
   Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>,
   Alias<w>;
-def _optimize_EQ : Joined<["--"], "optimize=">, Alias<O>,
-  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>;
-def _optimize : Flag<["--"], "optimize">, Alias<O>,
-  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>;
+def _optimize_EQ : Joined<["--"], "optimize=">, Alias<O>;
+def _optimize : Flag<["--"], "optimize">, Alias<O>;
 def _output_class_directory_EQ : Joined<["--"], "output-class-directory=">, Alias<foutput_class_dir_EQ>;
 def _output_class_directory : Separate<["--"], "output-class-directory">, Alias<foutput_class_dir_EQ>;
-def _output_EQ : Joined<["--"], "output=">, Alias<o>,
-  Visibility<[ClangOption, CC1Option, CC1AsOption, FlangOption, FC1Option]>;;
-def _output : Separate<["--"], "output">, Alias<o>,
-  Visibility<[ClangOption, CC1Option, CC1AsOption, FlangOption, FC1Option]>;;
+def _output_EQ : Joined<["--"], "output=">, Alias<o>;
+def _output : Separate<["--"], "output">, Alias<o>;
 def _param : Separate<["--"], "param">, Group<CompileOnly_Group>;
 def _param_EQ : Joined<["--"], "param=">, Alias<_param>;
 def _precompile : Flag<["--"], "precompile">, Flags<[NoXarchOption]>,
@@ -6582,8 +6560,7 @@ def _precompile : Flag<["--"], "precompile">, Flags<[NoXarchOption]>,
   Group<Action_Group>, HelpText<"Only precompile the input">;
 def _prefix_EQ : Joined<["--"], "prefix=">, Alias<B>;
 def _prefix : Separate<["--"], "prefix">, Alias<B>;
-def _preprocess : Flag<["--"], "preprocess">, Alias<E>,
-  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>;;
+def _preprocess : Flag<["--"], "preprocess">, Alias<E>;
 def _print_diagnostic_categories : Flag<["--"], "print-diagnostic-categories">;
 def _print_file_name : Separate<["--"], "print-file-name">, Alias<print_file_name_EQ>;
 def _print_missing_file_dependencies : Flag<["--"], "print-missing-file-dependencies">, Alias<MG>;
@@ -6605,10 +6582,8 @@ def _std : Separate<["--"], "std">, Alias<std_EQ>;
 def _stdlib : Separate<["--"], "stdlib">, Alias<stdlib_EQ>;
 def _target_help : Flag<["--"], "target-help">;
 def _trace_includes : Flag<["--"], "trace-includes">, Alias<H>;
-def _undefine_macro_EQ : Joined<["--"], "undefine-macro=">, Alias<U>,
-  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>;;
-def _undefine_macro : Separate<["--"], "undefine-macro">, Alias<U>,
-  Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>;;
+def _undefine_macro_EQ : Joined<["--"], "undefine-macro=">, Alias<U>;
+def _undefine_macro : Separate<["--"], "undefine-macro">, Alias<U>;
 def _unsigned_char : Flag<["--"], "unsigned-char">, Alias<funsigned_char>;
 def _user_dependencies : Flag<["--"], "user-dependencies">, Alias<MM>;
 def _verbose : Flag<["--"], "verbose">, Alias<v>,
@@ -7635,6 +7610,7 @@ let Visibility = [CC1Option] in {
 def target_linker_version : Separate<["-"], "target-linker-version">,
   HelpText<"Target linker version">,
   MarshallingInfoString<TargetOpts<"LinkerVersion">>;
+def triple_EQ : Joined<["-"], "triple=">, Alias<triple>;
 def mfpmath : Separate<["-"], "mfpmath">,
   HelpText<"Which unit to use for fp math">,
   MarshallingInfoString<TargetOpts<"FPMath">>;
@@ -7908,7 +7884,7 @@ def mlink_builtin_bitcode : Separate<["-"], "mlink-builtin-bitcode">,
 def mlink_bitcode_file
     : Separate<["-"], "mlink-bitcode-file">,
       HelpText<"Link the given bitcode file before performing optimizations.">;
-def triple_EQ : Joined<["-"], "triple=">, Alias<triple>;
+
 def vectorize_loops : Flag<["-"], "vectorize-loops">,
   HelpText<"Run the Loop vectorization passes">,
   MarshallingInfoFlag<CodeGenOpts<"VectorizeLoop">>;
