@@ -209,6 +209,7 @@ def fsan_cov_Group : OptionGroup<"<-fsanitize-coverage group>">,
 // target specific features and can be translated directly from command line
 // options.
 def m_aarch64_Features_Group : OptionGroup<"<aarch64 features group>">,
+                               Visibility<[ClangOption, FlangOption]>,
                                Group<m_Group>, DocName<"AARCH64">;
 def m_amdgpu_Features_Group : OptionGroup<"<amdgpu features group>">,
                               Group<m_Group>, DocName<"AMDGPU">;
@@ -5483,13 +5484,11 @@ foreach i = {8-15,18} in
     HelpText<"Make the x"#i#" register call-saved (AArch64 only)">;
 
 def msve_vector_bits_EQ : Joined<["-"], "msve-vector-bits=">, Group<m_aarch64_Features_Group>,
-  Visibility<[ClangOption, FlangOption]>,
   HelpText<"Specify the size in bits of an SVE vector register. Defaults to the"
            " vector length agnostic value of \"scalable\". (AArch64 only)">;
 def msve_streaming_vector_bits_EQ
     : Joined<["-"], "msve-streaming-vector-bits=">,
       Group<m_aarch64_Features_Group>,
-      Visibility<[ClangOption, FlangOption]>,
       HelpText<
           "Specify the size in bits of an SVE vector register in streaming "
           "mode. Defaults to the vector length agnostic value of "
