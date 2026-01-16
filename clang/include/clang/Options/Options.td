@@ -235,10 +235,10 @@ def m_wasm_Features_Group : OptionGroup<"<wasm features group>">,
 def m_wasm_Features_Driver_Group : OptionGroup<"<wasm driver features group>">,
                                    Group<m_Group>, DocName<"WebAssembly Driver">;
 def m_x86_Features_Group : OptionGroup<"<x86 features group>">,
-                           Group<m_Group>, Visibility<[ClangOption, CLOption]>,
+                           Group<m_Group>, Visibility<[ClangOption, CLOption, FlangOption]>,
                            DocName<"X86">;
 def m_x86_AVX10_Features_Group : OptionGroup<"<x86 AVX10 features group>">,
-                                 Group<m_Group>, Visibility<[ClangOption, CLOption]>,
+                                 Group<m_Group>, Visibility<[ClangOption, CLOption, FlangOption]>,
                                  DocName<"X86 AVX10">;
 def m_riscv_Features_Group : OptionGroup<"<riscv features group>">,
                              Group<m_Group>, DocName<"RISC-V">;
@@ -6795,9 +6795,12 @@ foreach i = {0-7} in
 let Flags = [TargetSpecific] in {
 def mx87 : Flag<["-"], "mx87">, Group<m_x86_Features_Group>;
 def mno_x87 : Flag<["-"], "mno-x87">, Group<m_x86_Features_Group>;
-def m80387 : Flag<["-"], "m80387">, Alias<mx87>;
-def mno_80387 : Flag<["-"], "mno-80387">, Alias<mno_x87>;
-def mno_fp_ret_in_387 : Flag<["-"], "mno-fp-ret-in-387">, Alias<mno_x87>;
+def m80387 : Flag<["-"], "m80387">, Alias<mx87>,
+             Visibility<[ClangOption, CLOption, FlangOption]>;
+def mno_80387 : Flag<["-"], "mno-80387">, Alias<mno_x87>,
+                Visibility<[ClangOption, CLOption, FlangOption]>;
+def mno_fp_ret_in_387 : Flag<["-"], "mno-fp-ret-in-387">, Alias<mno_x87>,
+                        Visibility<[ClangOption, CLOption, FlangOption]>;
 def mmmx : Flag<["-"], "mmmx">, Group<m_x86_Features_Group>;
 def mno_mmx : Flag<["-"], "mno-mmx">, Group<m_x86_Features_Group>;
 def mamx_avx512 : Flag<["-"], "mamx-avx512">, Group<m_x86_Features_Group>;
@@ -6836,11 +6839,13 @@ def mno_sse4_1 : Flag<["-"], "mno-sse4.1">, Group<m_x86_Features_Group>;
 def msse4_2 : Flag<["-"], "msse4.2">, Group<m_x86_Features_Group>;
 let Flags = [TargetSpecific] in {
 def mno_sse4_2 : Flag<["-"], "mno-sse4.2">, Group<m_x86_Features_Group>;
-def msse4 : Flag<["-"], "msse4">, Alias<msse4_2>;
+def msse4 : Flag<["-"], "msse4">, Alias<msse4_2>,
+            Visibility<[ClangOption, CLOption, FlangOption]>;
 // -mno-sse4 turns off sse4.1 which has the effect of turning off everything
 // later than 4.1. -msse4 turns on 4.2 which has the effect of turning on
 // everything earlier than 4.2.
-def mno_sse4 : Flag<["-"], "mno-sse4">, Alias<mno_sse4_1>;
+def mno_sse4 : Flag<["-"], "mno-sse4">, Alias<mno_sse4_1>,
+               Visibility<[ClangOption, CLOption, FlangOption]>;
 def msse4a : Flag<["-"], "msse4a">, Group<m_x86_Features_Group>;
 def mno_sse4a : Flag<["-"], "mno-sse4a">, Group<m_x86_Features_Group>;
 def mavx : Flag<["-"], "mavx">, Group<m_x86_Features_Group>;
